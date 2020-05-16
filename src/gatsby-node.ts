@@ -37,6 +37,10 @@ export async function sourceNodes(context: GatsbyContext, pluginConfig: unknown)
   const config = parseConfig(pluginConfig);
   const client = createClient(config);
 
+  const test = await client.admin.get(`/events.json?limit=250&filter=Collection,Page,Product&since_id=46396055289965`);
+
+  console.log(test.data.events);
+
   // For now assume no cache
 
   // TODO handle no published products
