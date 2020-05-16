@@ -99,18 +99,8 @@ const createNodeHelpers = (options: Partial<Options> = {}) => {
   // Creates a node factory with a given type and middleware processor.
   const createNodeFactory = (type: string, middleware: any = identity) => (
     obj: {[key: string]: any},
-    overrides = {},
+    ...args: any[]
   ): Promise<GatsbyNode> => {
-    // if (!isPlainObject(obj))
-    //   throw new Error(
-    //     `The source object must be a plain object. An argument of type "${typeof obj}" was provided.`,
-    //   )
-
-    // if (!isPlainObject(overrides))
-    //   throw new Error(
-    //     `Node overrides must be a plain object. An argument of type "${typeof overrides}" was provided.`,
-    //   )
-
     const clonedObj = cloneDeep(obj)
     const safeObj = prefixConflictingKeys(clonedObj)
 
@@ -124,13 +114,10 @@ const createNodeHelpers = (options: Partial<Options> = {}) => {
       },
     }
 
-    node = middleware(node)
+    node = middleware(node, ...args);
 
     return Promise.resolve(node).then(resolvedNode =>
-      withDigest({
-        ...resolvedNode,
-        ...overrides,
-      } as unknown as GatsbyNode),
+      withDigest(resolvedNode as unknown as GatsbyNode),
     )
   }
 

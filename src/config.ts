@@ -1,4 +1,5 @@
-import { object, string } from "yup";
+import { object, string, mixed } from "yup";
+import { ApiVersion } from "./types";
 
 /**
  * Inernal populated config
@@ -35,7 +36,7 @@ export interface PluginConfig {
   /**
    * Shopify api version to use
    */
-  apiVersion: string;
+  apiVersion: ApiVersion;
 }
 
 const PLUGIN_CONFIG_SCHEMA = object({
@@ -43,7 +44,7 @@ const PLUGIN_CONFIG_SCHEMA = object({
   adminAccessToken: string().required(),
   storefrontAccessToken: string().required(),
   storefrontShopDomain: string().optional(),
-  apiVersion: string().default('2020-07'),
+  apiVersion: mixed<ApiVersion>().oneOf([ApiVersion.Apr2020, ApiVersion.Jul2020]).default(ApiVersion.Apr2020),
 });
 
 export function parseConfig(input: unknown): PluginConfig {

@@ -2,10 +2,12 @@ import axios, { AxiosInstance } from 'axios';
 import axiosRetry from 'axios-retry';
 
 import { PluginConfig } from "./config";
+import { ApiVersion } from './types';
 
 export interface Client {
   admin: AxiosInstance;
   storefront: AxiosInstance;
+  version: ApiVersion;
 }
 
 export function createClient(config: PluginConfig): Client {
@@ -30,10 +32,10 @@ export function createClient(config: PluginConfig): Client {
     }
   });
 
-  // Incremental backoff
+  // Exponential backoff
   // TODO handle 429 and cost extension
   axiosRetry(admin, { retryDelay: axiosRetry.exponentialDelay});
   axiosRetry(storefront, { retryDelay: axiosRetry.exponentialDelay});
 
-  return { storefront, admin };
+  return { storefront, admin, version: apiVersion };
 }
