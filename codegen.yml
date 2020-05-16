@@ -1,6 +1,7 @@
 schema: 'shopify-storefront.graphql'
 
 documents:
+  - 'src/fragments/***.ts'
   - 'src/queries/***.ts'
 
 generates:

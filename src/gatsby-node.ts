@@ -1,23 +1,34 @@
 import { parseConfig } from "./config";
 import { GatsbyContext } from "./types/gatsby";
 import { createClient } from "./client";
-import { loadAllStorefrontProducts } from "./queries";
-import { ProductOptionNode, ProductMetafieldNode, ProductVariantNode, ProductVariantMetafieldNode, ProductNode } from "./nodes";
+import { loadAllStorefrontProducts, loadAllStorefrontCollections } from "./queries";
+import { createProductNode } from "./nodes";
+import { createCollectionNode } from "./nodes/collection";
+import { TYPE_PREFIX, PRODUCT_VARIANT, PRODUCT, COLLECTION } from "./constants";
 
 // TODO do this based on the chosen api version
-exports.createSchemaCustomization = ({ actions }: GatsbyContext, pluginConfig: unknown) => {
-  const { createTypes } = actions
+exports.createSchemaCustomization = (context: GatsbyContext, pluginConfig: unknown) => {
+  const { actions: { createTypes } } = context;
+
+  const config = parseConfig(pluginConfig);
+
+  // TODO annotate based on API version
+
   const typeDefs = `
-    type ShopifyProductVariant implements Node {
+    type ${TYPE_PREFIX}${PRODUCT_VARIANT} implements Node {
       price: String! @deprecated(reason: "Use priceV2 instead")
-      compareAtPrice: String! @deprecated(reason: "Use compareAtPriceV2 instead")
+      compareAtPrice: String @deprecated(reason: "Use compareAtPriceV2 instead")
     }
 
-    type ShopifyProduct implements Node {
+    type ${TYPE_PREFIX}${PRODUCT} implements Node {
       updatedAt: Date! @dateformat
     }
+
+    type ${TYPE_PREFIX}${COLLECTION}Image implements Node {
+      src: String @deprecated(reason: "Previously an image had a single src field. This could either return the original image location or a URL that contained transformations such as sizing or scale.")
+    }
   `;
-  createTypes(typeDefs)
+  createTypes(typeDefs);
 }
 
 export async function sourceNodes(context: GatsbyContext, pluginConfig: unknown) {
@@ -30,20 +41,10 @@ export async function sourceNodes(context: GatsbyContext, pluginConfig: unknown)
 
   // TODO handle no published products
   for await (let product of loadAllStorefrontProducts(client)) {
-    // Create product option nodes
-    await Promise.all(product.options.map(ProductOptionNode).map(p => p.then(createNode)));
+    await createProductNode(product, createNode);
+  }
 
-    // Create all metafield nodes
-    await Promise.all(product.metafields.edges.map(edge => ProductMetafieldNode(edge.node)).map(p => p.then(createNode)));
-
-
-    await Promise.all(product.variants.edges.map(async edge => {
-      await Promise.all(edge.node.metafields.edges.map(edge => ProductVariantMetafieldNode(edge.node)).map(p => p.then(createNode)));
-      return ProductVariantNode(edge.node, product.id).then(createNode);
-    }));
-
-    console.log(product.handle)
-
-    await ProductNode(product).then(createNode);
+  for await (let collection of loadAllStorefrontCollections(client)) {
+    await createCollectionNode(collection, createNode);
   }
 }

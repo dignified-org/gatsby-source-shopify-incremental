@@ -1,7 +1,9 @@
 import { ApiVersion } from '../types';
+import { metafieldFragment } from './metafield';
 
 function productVariantFragment(version: ApiVersion) {
   return /* GraphQL */ `
+    ${metafieldFragment(version)}
     fragment ProductVariantNode on ProductVariant {
       availableForSale
       compareAtPrice
@@ -18,12 +20,7 @@ function productVariantFragment(version: ApiVersion) {
       metafields(first: 250) {
         edges {
           node {
-            description
-            id
-            key
-            namespace
-            value
-            valueType
+            ...MetafieldNode
           }
         }
       }
@@ -81,12 +78,8 @@ export function productFragment(version: ApiVersion) {
       metafields(first: 250) {
         edges {
           node {
-            description
-            id
-            key
-            namespace
-            value
-            valueType
+            # Included in variant fragment
+            ...MetafieldNode
           }
         }
       }

@@ -42,6 +42,10 @@ export interface Options {
   conflictFieldPrefix?: string;
 }
 
+export interface Middleware<T> {
+  (node: T, ...args: any[]): Promise<T>;
+}
+
 // Returns node helpers for creating new nodes.
 const createNodeHelpers = (options: Partial<Options> = {}) => {
   if (!isPlainObject(options))
@@ -85,20 +89,20 @@ const createNodeHelpers = (options: Partial<Options> = {}) => {
     upperFirst(camelCase(`${typePrefix} ${type}`))
 
   // Prefixes conflicting node fields.
-  const prefixConflictingKeys = (obj: {[key: string]: any}) => {
-    Object.keys(obj).forEach(key => {
+  const prefixConflictingKeys = <T>(obj: T) => {
+    Object.keys((obj as any)).forEach(key => {
       if (RESTRICTED_NODE_FIELDS.includes(key)) {
-        obj[conflictFieldPrefix + upperFirst(key)] = obj[key]
-        delete obj[key]
+        (obj as any)[conflictFieldPrefix + upperFirst(key)] = (obj as any)[key]
+        delete (obj as any)[key]
       }
     })
 
-    return obj
+    return obj;
   }
 
   // Creates a node factory with a given type and middleware processor.
-  const createNodeFactory = (type: string, middleware: any = identity) => (
-    obj: {[key: string]: any},
+  const createNodeFactory = <T extends { id: string }>(type: string, middleware: Middleware<T> = identity) => async (
+    obj: T,
     ...args: any[]
   ): Promise<GatsbyNode> => {
     const clonedObj = cloneDeep(obj)
@@ -114,11 +118,9 @@ const createNodeHelpers = (options: Partial<Options> = {}) => {
       },
     }
 
-    node = middleware(node, ...args);
+    let n = await middleware(node, ...args);
 
-    return Promise.resolve(node).then(resolvedNode =>
-      withDigest(resolvedNode as unknown as GatsbyNode),
-    )
+    return withDigest(n as unknown as GatsbyNode)
   }
 
   return {
