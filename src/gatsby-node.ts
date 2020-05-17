@@ -1,3 +1,4 @@
+import { formatDistanceToNowStrict } from 'date-fns';
 import { parseConfig } from "./config";
 import { GatsbyContext, GatsbyNode } from "./types/gatsby";
 import { createClient } from "./client";
@@ -57,7 +58,7 @@ export async function sourceNodes(context: GatsbyContext, pluginConfig: unknown)
     // a 5m delta seems to catch all the needed updates
     const since = new Date(lastProductImport - (5 * 60 * 1000)); 
 
-    reporter.info(`[Shopify] Importing products modified after ${since.toISOString()}`);
+    reporter.info(`[Shopify] Importing product changes from last ${formatDistanceToNowStrict(since)} (since ${since.toDateString().substring(0, 19)})`);
 
     // Ensure nodes are not garbage collected
     getNodesByType(`${TYPE_PREFIX}${NodeType.PRODUCT}`).forEach((node: GatsbyNode) => touchNode({ nodeId: node.id }));
@@ -70,10 +71,50 @@ export async function sourceNodes(context: GatsbyContext, pluginConfig: unknown)
     let updates = 0;
     for await (let productEvent of productEventsSince(client, since)) {
       if (productEvent.type === EventType.Create) {
+        // TODO expose function from nodes
+        const productNode = getNode(`${TYPE_PREFIX}__${NodeType.PRODUCT}__${productEvent.storefrontId}`);
+
+        // TODO clean this section up. Do it in node factories?
+        if (productNode) {
+          if (Array.isArray(productNode.metafields___NODE)) {
+            productNode.metafields___NODE.forEach((id: string) => {
+              const node = getNode(id);
+              if (node) {
+                deleteNode({
+                  node,
+                });
+              }
+            });
+          }
+
+          if (Array.isArray(productNode.variants___NODE)) {
+            productNode.variants___NODE.forEach((id: string) => {
+              const variantNode = getNode(id);
+
+              if (variantNode) {
+                if (Array.isArray(variantNode.metafields___NODE)) {
+                  variantNode.metafields___NODE.forEach((id: string) => {
+                    const node = getNode(id);
+                    if (node) {
+                      deleteNode({
+                        node,
+                      });
+                    }
+                  });
+                }
+
+                deleteNode({
+                  node: variantNode,
+                });
+              }
+            });
+          }
+
+          deleteNode({
+            node: productNode,
+          });
+        }
         await createProductNode(productEvent.node, createNode);
-
-        // TODO figure out if we need to delete old variants, metafields, etc
-
         updates++;
       } else {
         // TODO expose function from nodes
@@ -86,7 +127,7 @@ export async function sourceNodes(context: GatsbyContext, pluginConfig: unknown)
         }
       }
     }
-    reporter.info(`[Shopify] Finished importing products: ${updates} updated and ${deletions} removed`);
+    reporter.info(`[Shopify] Finished importing product changes: ${updates} updated and ${deletions} removed`);
   }
   await (cache as any).set(`${config.myshopifyDomain}${NodeType.PRODUCT}`, productStartTime);
 

@@ -12,7 +12,7 @@ const { createNodeFactory, generateNodeId } = createNodeHelpers({
   typePrefix: TYPE_PREFIX,
 });
 
-interface ProductNode extends ProductNodeFragment {
+export interface ProductNode extends ProductNodeFragment {
   variants___NODE?: string[];
   metafields___NODE?: string[];
 }
@@ -20,6 +20,8 @@ interface ProductNode extends ProductNodeFragment {
 const ProductNode = createNodeFactory(
   NodeType.PRODUCT,
   async (node: ProductNode) => {
+    // TODO handle relationship based deletions here
+
     if (node.variants) {
       const variants = node.variants.edges.map((edge) => edge.node);
 
