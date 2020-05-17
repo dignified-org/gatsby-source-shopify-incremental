@@ -1,6 +1,8 @@
+export * from './gatsby';
+
 export enum ApiVersion {
   Apr2020 = '2020-04',
   Jul2020 = '2020-07',
 }
 
-export * from './gatsby';
+export type QueryResult<T> = { data: { data: T } };

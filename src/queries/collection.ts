@@ -1,7 +1,6 @@
 import { Client } from '../client';
 import { LoadCollectionsQuery, LoadCollectionsQueryVariables } from './types';
-import { QueryResult } from '.';
-import { ApiVersion } from '../types';
+import { ApiVersion, QueryResult } from '../types';
 import { collectionFragment } from '../fragments';
 import { fetchAllNodesFactory } from './util';
 

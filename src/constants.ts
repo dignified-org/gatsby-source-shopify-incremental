@@ -1,14 +1,15 @@
 // Node prefix
 export const TYPE_PREFIX = 'Shopify';
 
-// Node types
-export const ARTICLE = 'Article';
-export const BLOG = 'Blog';
-export const COLLECTION = 'Collection';
-export const COMMENT = 'Comment';
-export const PRODUCT = 'Product';
-export const PRODUCT_VARIANT = 'ProductVariant';
-export const PRODUCT_METAFIELD = 'ProductMetafield';
-export const PRODUCT_VARIANT_METAFIELD = 'ProductVariantMetafield';
-export const SHOP_POLICY = 'ShopPolicy';
-export const PAGE = 'Page';
+export enum NodeType {
+ ARTICLE = 'Article',
+ BLOG = 'Blog',
+ COLLECTION = 'Collection',
+ COMMENT = 'Comment',
+ PRODUCT = 'Product',
+ PRODUCT_VARIANT = 'ProductVariant',
+ PRODUCT_METAFIELD = 'ProductMetafield',
+ PRODUCT_VARIANT_METAFIELD = 'ProductVariantMetafield',
+ SHOP_POLICY = 'ShopPolicy',
+ PAGE = 'Page',
+}

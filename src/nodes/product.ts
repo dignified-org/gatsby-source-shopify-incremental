@@ -1,12 +1,6 @@
 import createNodeHelpers from '../create-node-helpers';
 
-import {
-  TYPE_PREFIX,
-  PRODUCT,
-  PRODUCT_VARIANT,
-  PRODUCT_METAFIELD,
-  PRODUCT_VARIANT_METAFIELD,
-} from '../constants';
+import { TYPE_PREFIX, NodeType } from '../constants';
 import {
   ProductNodeFragment,
   ProductVariantNodeFragment,
@@ -23,37 +17,40 @@ interface ProductNode extends ProductNodeFragment {
   metafields___NODE?: string[];
 }
 
-const ProductNode = createNodeFactory(PRODUCT, async (node: ProductNode) => {
-  if (node.variants) {
-    const variants = node.variants.edges.map((edge) => edge.node);
+const ProductNode = createNodeFactory(
+  NodeType.PRODUCT,
+  async (node: ProductNode) => {
+    if (node.variants) {
+      const variants = node.variants.edges.map((edge) => edge.node);
 
-    node.variants___NODE = variants.map((variant) =>
-      generateNodeId(PRODUCT_VARIANT, variant.id),
-    );
+      node.variants___NODE = variants.map((variant) =>
+        generateNodeId(NodeType.PRODUCT_VARIANT, variant.id),
+      );
 
-    delete node.variants;
-  }
+      delete node.variants;
+    }
 
-  if (node.metafields) {
-    const metafields = node.metafields.edges.map((edge) => edge.node);
+    if (node.metafields) {
+      const metafields = node.metafields.edges.map((edge) => edge.node);
 
-    node.metafields___NODE = metafields.map((metafield) =>
-      generateNodeId(PRODUCT_METAFIELD, metafield.id),
-    );
-    delete node.metafields;
-  }
+      node.metafields___NODE = metafields.map((metafield) =>
+        generateNodeId(NodeType.PRODUCT_METAFIELD, metafield.id),
+      );
+      delete node.metafields;
+    }
 
-  return node;
-});
+    return node;
+  },
+);
 
 interface ProductMetafieldNode extends MetafieldNodeFragment {
   product___NODE?: string;
 }
 
 const ProductMetafieldNode = createNodeFactory(
-  PRODUCT_METAFIELD,
+  NodeType.PRODUCT_METAFIELD,
   async (node: ProductMetafieldNode, productId: string) => {
-    node.product___NODE = generateNodeId(PRODUCT_VARIANT, productId);
+    node.product___NODE = generateNodeId(NodeType.PRODUCT_VARIANT, productId);
 
     return node;
   },
@@ -65,18 +62,18 @@ interface ProductVariantNode extends ProductVariantNodeFragment {
 }
 
 const ProductVariantNode = createNodeFactory(
-  PRODUCT_VARIANT,
+  NodeType.PRODUCT_VARIANT,
   async (node: ProductVariantNode, productId: string) => {
     if (node.metafields) {
       const metafields = node.metafields.edges.map((edge) => edge.node);
 
       node.metafields___NODE = metafields.map((metafield) =>
-        generateNodeId(PRODUCT_VARIANT_METAFIELD, metafield.id),
+        generateNodeId(NodeType.PRODUCT_VARIANT_METAFIELD, metafield.id),
       );
       delete node.metafields;
     }
 
-    node.product___NODE = generateNodeId(PRODUCT, productId);
+    node.product___NODE = generateNodeId(NodeType.PRODUCT, productId);
 
     return node;
   },
@@ -87,9 +84,9 @@ interface ProductVariantMetafieldNode extends MetafieldNodeFragment {
 }
 
 const ProductVariantMetafieldNode = createNodeFactory(
-  PRODUCT_VARIANT_METAFIELD,
+  NodeType.PRODUCT_VARIANT_METAFIELD,
   async (node: ProductVariantMetafieldNode, variantId: string) => {
-    node.variant___NODE = generateNodeId(PRODUCT_VARIANT, variantId);
+    node.variant___NODE = generateNodeId(NodeType.PRODUCT_VARIANT, variantId);
 
     return node;
   },

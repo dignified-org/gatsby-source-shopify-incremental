@@ -14,7 +14,7 @@ export function createClient(config: PluginConfig): Client {
   const { apiVersion, myshopifyDomain, adminAccessToken, storefrontShopDomain, storefrontAccessToken } = config;
 
   const admin = axios.create({
-    baseURL: `https://${myshopifyDomain}/admin/api/${apiVersion}`,
+    baseURL: `https://${myshopifyDomain}/admin/api/2020-04`,
     headers: {
       'X-Shopify-Access-Token': adminAccessToken,
       'Content-Type': 'application/json',
@@ -34,8 +34,8 @@ export function createClient(config: PluginConfig): Client {
 
   // Exponential backoff
   // TODO handle 429 and cost extension
-  axiosRetry(admin, { retryDelay: axiosRetry.exponentialDelay});
-  axiosRetry(storefront, { retryDelay: axiosRetry.exponentialDelay});
+  axiosRetry(admin, { retries: 5, retryDelay: axiosRetry.exponentialDelay });
+  axiosRetry(storefront, { retries: 5, retryDelay: axiosRetry.exponentialDelay});
 
   return { storefront, admin, version: apiVersion };
 }

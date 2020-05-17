@@ -1,53 +1,96 @@
 import { parseConfig } from "./config";
-import { GatsbyContext } from "./types/gatsby";
+import { GatsbyContext, GatsbyNode } from "./types/gatsby";
 import { createClient } from "./client";
 import { loadAllStorefrontProducts, loadAllStorefrontCollections } from "./queries";
 import { createProductNode } from "./nodes";
 import { createCollectionNode } from "./nodes/collection";
-import { TYPE_PREFIX, PRODUCT_VARIANT, PRODUCT, COLLECTION } from "./constants";
+import { TYPE_PREFIX, NodeType } from "./constants";
+import { productEventsSince } from "./admin/product-events";
+import { EventType } from "./admin";
 
 // TODO do this based on the chosen api version
 exports.createSchemaCustomization = (context: GatsbyContext, pluginConfig: unknown) => {
   const { actions: { createTypes } } = context;
 
+  // TODO annotate based on API version
   const config = parseConfig(pluginConfig);
 
-  // TODO annotate based on API version
-
   const typeDefs = `
-    type ${TYPE_PREFIX}${PRODUCT_VARIANT} implements Node {
+    type ${TYPE_PREFIX}${NodeType.PRODUCT_VARIANT} implements Node {
       price: String! @deprecated(reason: "Use priceV2 instead")
       compareAtPrice: String @deprecated(reason: "Use compareAtPriceV2 instead")
     }
 
-    type ${TYPE_PREFIX}${PRODUCT} implements Node {
+    type ${TYPE_PREFIX}${NodeType.PRODUCT} implements Node {
       updatedAt: Date! @dateformat
     }
 
-    type ${TYPE_PREFIX}${COLLECTION}Image implements Node {
+    type ${TYPE_PREFIX}${NodeType.COLLECTION}Image implements Node {
       src: String @deprecated(reason: "Previously an image had a single src field. This could either return the original image location or a URL that contained transformations such as sizing or scale.")
     }
   `;
+
   createTypes(typeDefs);
 }
 
 export async function sourceNodes(context: GatsbyContext, pluginConfig: unknown) {
-  const { actions: { createNode } } = context;
+  const { actions: { createNode, touchNode, deleteNode }, cache, reporter, getNodesByType, getNode } = context;
 
   const config = parseConfig(pluginConfig);
   const client = createClient(config);
 
-  const test = await client.admin.get(`/events.json?limit=250&filter=Collection,Page,Product&since_id=46396055289965`);
+  // Products
+  const lastProductImport = await (cache as any).get(`${config.myshopifyDomain}${NodeType.PRODUCT}`);
+  const productStartTime = Date.now();
+  if (!lastProductImport) {
+    reporter.info('[Shopify] No products cache found, starting full product import');
 
-  console.log(test.data.events);
+    // TODO handle no published products
+    let count = 0;
+    for await (let product of loadAllStorefrontProducts(client)) {
+      await createProductNode(product, createNode);
+      count++;
+    }
+    reporter.info(`[Shopify] Finished importing ${count} products`);
+  } else {
+    // Shopify takes it's time updating the events api
+    // a 5m delta seems to catch all the needed updates
+    const since = new Date(lastProductImport - (5 * 60 * 1000)); 
 
-  // For now assume no cache
+    reporter.info(`[Shopify] Importing products modified after ${since.toISOString()}`);
 
-  // TODO handle no published products
-  for await (let product of loadAllStorefrontProducts(client)) {
-    await createProductNode(product, createNode);
+    // Ensure nodes are not garbage collected
+    getNodesByType(`${TYPE_PREFIX}${NodeType.PRODUCT}`).forEach((node: GatsbyNode) => touchNode({ nodeId: node.id }));
+    getNodesByType(`${TYPE_PREFIX}${NodeType.PRODUCT_METAFIELD}`).forEach((node: GatsbyNode) => touchNode({ nodeId: node.id }));
+    getNodesByType(`${TYPE_PREFIX}${NodeType.PRODUCT_VARIANT}`).forEach((node: GatsbyNode) => touchNode({ nodeId: node.id }));
+    getNodesByType(`${TYPE_PREFIX}${NodeType.PRODUCT_VARIANT_METAFIELD}`).forEach((node: GatsbyNode) => touchNode({ nodeId: node.id }));
+
+
+    let deletions = 0;
+    let updates = 0;
+    for await (let productEvent of productEventsSince(client, since)) {
+      if (productEvent.type === EventType.Create) {
+        await createProductNode(productEvent.node, createNode);
+
+        // TODO figure out if we need to delete old variants, metafields, etc
+
+        updates++;
+      } else {
+        // TODO expose function from nodes
+        const node = getNode(`${TYPE_PREFIX}__${NodeType.PRODUCT}__${productEvent.storefrontId}`);
+        if (node) {
+          deleteNode({
+            node,
+          });
+          deletions++;
+        }
+      }
+    }
+    reporter.info(`[Shopify] Finished importing products: ${updates} updated and ${deletions} removed`);
   }
+  await (cache as any).set(`${config.myshopifyDomain}${NodeType.PRODUCT}`, productStartTime);
 
+  // Collections
   for await (let collection of loadAllStorefrontCollections(client)) {
     await createCollectionNode(collection, createNode);
   }

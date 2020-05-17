@@ -15,23 +15,28 @@ export interface NodesFetcherResponse<T> {
   };
 }
 
-export interface NodesFetcher<T> {
-  (client: Client, variables: NodesFetcherVariables): Promise<
-    NodesFetcherResponse<T>
-  >;
+export interface NodesFetcher<
+  T,
+  V extends NodesFetcherVariables = NodesFetcherVariables
+> {
+  (client: Client, variables: V): Promise<NodesFetcherResponse<T>>;
 }
 
 export function fetchAllNodesFactory<T>(fetcher: NodesFetcher<T>) {
-  return async function* fetchAllNodes(client: Client) {
+  return async function* fetchAllNodes(
+    client: Client,
+    variables?: Omit<NodesFetcherVariables, 'first' | 'after'>,
+  ) {
     let {
       edges,
       pageInfo: { hasNextPage },
     } = await fetcher(client, {
+      ...variables,
       first: 250,
     });
 
     while (edges.length) {
-      const edge = edges.pop();
+      const edge = edges.shift();
 
       if (!edge) {
         throw new Error('Assert');
@@ -44,6 +49,7 @@ export function fetchAllNodesFactory<T>(fetcher: NodesFetcher<T>) {
           edges,
           pageInfo: { hasNextPage },
         } = await fetcher(client, {
+          ...variables,
           first: 250,
           after: edge.cursor,
         }));

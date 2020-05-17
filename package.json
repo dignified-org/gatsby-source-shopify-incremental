@@ -20,7 +20,7 @@
     "@types/axios": "^0.14.0",
     "@types/json-stringify-safe": "^5.0.0",
     "@types/yup": "^0.28.3",
-    "gatsby": "^2.21.31",
+    "gatsby": "^2.21.33",
     "jest": "^26.0.1",
     "prettier": "^2.0.5",
     "ts-jest": "^25.5.1",

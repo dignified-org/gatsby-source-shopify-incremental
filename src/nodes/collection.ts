@@ -1,6 +1,6 @@
 import createNodeHelpers from '../create-node-helpers';
 
-import { TYPE_PREFIX, PRODUCT, COLLECTION } from '../constants';
+import { TYPE_PREFIX, NodeType } from '../constants';
 import { CollectionNodeFragment } from '../queries/types';
 import { GatsbyNodeCreator } from '../types';
 
@@ -13,11 +13,11 @@ interface CollectionNode extends CollectionNodeFragment {
 }
 
 const CollectionNode = createNodeFactory(
-  COLLECTION,
+  NodeType.COLLECTION,
   async (node: CollectionNode) => {
     if (node.products) {
       node.products___NODE = node.products.edges.map((edge) =>
-        generateNodeId(PRODUCT, edge.node.id),
+        generateNodeId(NodeType.PRODUCT, edge.node.id),
       );
       delete node.products;
     }

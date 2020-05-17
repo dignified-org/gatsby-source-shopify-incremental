@@ -116,6 +116,7 @@ export interface GatsbyContext {
   getNode: (id: string) => GatsbyNode | undefined;
   getNodes: () => GatsbyNode[];
   reporter: GatsbyReporter;
+  getNodesByType: any;
 }
 
 export interface GatsbySsrContext {

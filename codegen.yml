@@ -1,11 +1,23 @@
-schema: 'shopify-storefront.graphql'
-
-documents:
-  - 'src/fragments/***.ts'
-  - 'src/queries/***.ts'
-
 generates:
   ./src/queries/types.ts:
+    schema: 'shopify-storefront.graphql'
+    documents:
+      - 'src/fragments/***.ts'
+      - 'src/queries/***.ts'
+    config:
+      skipTypename: true
+    plugins:
+      - add: '/* AUTO GENERATED FILE. DO NOT MODIFY */'
+      - add: '/* eslint-disable */'
+      - typescript
+      - typescript-operations
+
+  ./src/admin/types.ts:
+    schema: 'shopify-admin.graphql'
+    documents:
+      - 'src/admin/***.ts'
+    config:
+      skipTypename: true
     plugins:
       - add: '/* AUTO GENERATED FILE. DO NOT MODIFY */'
       - add: '/* eslint-disable */'
