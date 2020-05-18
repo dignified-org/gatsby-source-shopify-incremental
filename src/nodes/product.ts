@@ -8,8 +8,7 @@ import {
 } from '../queries/types';
 import { GatsbyNodeCreator } from '../types/gatsby';
 import { NodeActions } from '.';
-import { CreationEvent } from "../admin";
-
+import { CreationEvent } from '../admin';
 
 // TODO look into baking relationships into node helpers in
 // some way. Should be able to have crud functions generated
@@ -126,8 +125,10 @@ export async function createProductNode(
   await ProductNode(product).then(createNode);
 }
 
-
-export async function deleteProductNode(storefrontId: string, actions: NodeActions) {
+export async function deleteProductNode(
+  storefrontId: string,
+  actions: NodeActions,
+) {
   const { getNode, deleteNode } = actions;
 
   const productNode = getNode(generateNodeId(NodeType.PRODUCT, storefrontId));
@@ -174,7 +175,10 @@ export async function deleteProductNode(storefrontId: string, actions: NodeActio
   }
 }
 
-export async function upsertProductNode(event: CreationEvent<ProductNodeFragment>, actions: NodeActions) {
+export async function upsertProductNode(
+  event: CreationEvent<ProductNodeFragment>,
+  actions: NodeActions,
+) {
   const { createNode } = actions;
   await deleteProductNode(event.storefrontId, actions);
   await createProductNode(event.node, createNode);
