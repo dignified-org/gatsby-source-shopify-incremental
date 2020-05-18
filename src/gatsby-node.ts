@@ -3,7 +3,7 @@ import { parseConfig } from "./config";
 import { GatsbyContext, GatsbyNode } from "./types/gatsby";
 import { createClient } from "./client";
 import { loadAllStorefrontProducts, loadAllStorefrontCollections } from "./queries";
-import { createProductNode } from "./nodes";
+import { createProductNode, upsertProductNode, deleteProductNode } from "./nodes";
 import { createCollectionNode } from "./nodes/collection";
 import { TYPE_PREFIX, NodeType } from "./constants";
 import { productEventsSince } from "./admin/product-events";
@@ -71,60 +71,11 @@ export async function sourceNodes(context: GatsbyContext, pluginConfig: unknown)
     let updates = 0;
     for await (let productEvent of productEventsSince(client, since)) {
       if (productEvent.type === EventType.Create) {
-        // TODO expose function from nodes
-        const productNode = getNode(`${TYPE_PREFIX}__${NodeType.PRODUCT}__${productEvent.storefrontId}`);
-
-        // TODO clean this section up. Do it in node factories?
-        if (productNode) {
-          if (Array.isArray(productNode.metafields___NODE)) {
-            productNode.metafields___NODE.forEach((id: string) => {
-              const node = getNode(id);
-              if (node) {
-                deleteNode({
-                  node,
-                });
-              }
-            });
-          }
-
-          if (Array.isArray(productNode.variants___NODE)) {
-            productNode.variants___NODE.forEach((id: string) => {
-              const variantNode = getNode(id);
-
-              if (variantNode) {
-                if (Array.isArray(variantNode.metafields___NODE)) {
-                  variantNode.metafields___NODE.forEach((id: string) => {
-                    const node = getNode(id);
-                    if (node) {
-                      deleteNode({
-                        node,
-                      });
-                    }
-                  });
-                }
-
-                deleteNode({
-                  node: variantNode,
-                });
-              }
-            });
-          }
-
-          deleteNode({
-            node: productNode,
-          });
-        }
-        await createProductNode(productEvent.node, createNode);
+        upsertProductNode(productEvent, { getNode, createNode, deleteNode })
         updates++;
       } else {
-        // TODO expose function from nodes
-        const node = getNode(`${TYPE_PREFIX}__${NodeType.PRODUCT}__${productEvent.storefrontId}`);
-        if (node) {
-          deleteNode({
-            node,
-          });
-          deletions++;
-        }
+        deleteProductNode(productEvent.storefrontId, { getNode, createNode, deleteNode });
+        deletions++;
       }
     }
     reporter.info(`[Shopify] Finished importing product changes: ${updates} updated and ${deletions} removed`);

@@ -7,6 +7,13 @@ import {
   MetafieldNodeFragment,
 } from '../queries/types';
 import { GatsbyNodeCreator } from '../types/gatsby';
+import { NodeActions } from '.';
+import { CreationEvent } from "../admin";
+
+
+// TODO look into baking relationships into node helpers in
+// some way. Should be able to have crud functions generated
+// Maybe automate the touchnode as well?
 
 const { createNodeFactory, generateNodeId } = createNodeHelpers({
   typePrefix: TYPE_PREFIX,
@@ -117,4 +124,58 @@ export async function createProductNode(
   );
 
   await ProductNode(product).then(createNode);
+}
+
+
+export async function deleteProductNode(storefrontId: string, actions: NodeActions) {
+  const { getNode, deleteNode } = actions;
+
+  const productNode = getNode(generateNodeId(NodeType.PRODUCT, storefrontId));
+
+  // TODO clean this section up. Do it in node factories?
+  if (productNode) {
+    if (Array.isArray(productNode.metafields___NODE)) {
+      productNode.metafields___NODE.forEach((id: string) => {
+        const node = getNode(id);
+        if (node) {
+          deleteNode({
+            node,
+          });
+        }
+      });
+    }
+
+    if (Array.isArray(productNode.variants___NODE)) {
+      productNode.variants___NODE.forEach((id: string) => {
+        const variantNode = getNode(id);
+
+        if (variantNode) {
+          if (Array.isArray(variantNode.metafields___NODE)) {
+            variantNode.metafields___NODE.forEach((id: string) => {
+              const node = getNode(id);
+              if (node) {
+                deleteNode({
+                  node,
+                });
+              }
+            });
+          }
+
+          deleteNode({
+            node: variantNode,
+          });
+        }
+      });
+    }
+
+    deleteNode({
+      node: productNode,
+    });
+  }
+}
+
+export async function upsertProductNode(event: CreationEvent<ProductNodeFragment>, actions: NodeActions) {
+  const { createNode } = actions;
+  await deleteProductNode(event.storefrontId, actions);
+  await createProductNode(event.node, createNode);
 }
