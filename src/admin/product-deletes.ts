@@ -1,6 +1,7 @@
 import { Client } from '../client';
 import { ProductDeletesQueryVariables, ProductDeletesQuery } from './types';
 import { QueryResult } from '../types';
+import { batchAllNodesFactory } from './util';
 
 const PRODUCT_DELETES_QUERY = /* GraphQL */ `
   query ProductDeletes($first: Int!, $after: String, $query: String) {
@@ -42,58 +43,20 @@ async function fetchAdminProductDeletes(
   return data.data.deletionEvents;
 }
 
-/**
- * Generates product updates in batches of 50
- */
-export async function* adminProductDeletes(client: Client, since: Date) {
+
+function con(node: ProductDeletesQuery['deletionEvents']['edges'][0]['node'], since: Date) {
+  return new Date(node.occurredAt) > since;
+}
+
+function vars(since: Date) {
   const hourSlug = since.toISOString().substring(0, 13);
   const query = `occurred_at:>${hourSlug}`;
-  let {
-    edges,
-    pageInfo: { hasNextPage },
-  } = await fetchAdminProductDeletes(client, {
-    first: 250,
+  return {
     query,
-  });
-
-  while (1) {
-    if (!edges.length) {
-      break;
-    }
-
-    const batch = [];
-
-    while (1) {
-      if (batch.length === 50 || !edges.length) {
-        break;
-      }
-
-      const edge = edges.shift();
-
-      if (!edge) {
-        throw new Error('Assert');
-      }
-
-      if (new Date(edge.node.occurredAt) < since) {
-        yield batch;
-        return;
-      }
-      batch.push(edge);
-    }
-
-    yield batch;
-
-    if (edges.length < 50 && hasNextPage) {
-      ({
-        edges,
-        pageInfo: { hasNextPage },
-      } = await fetchAdminProductDeletes(client, {
-        first: 250,
-        query,
-        after: edges.length
-          ? edges[edges.length - 1].cursor
-          : batch[batch.length - 1].cursor,
-      }));
-    }
   }
 }
+
+/**
+ * Generates product deletes in batches of 50
+ */
+export const adminProductDeletes = batchAllNodesFactory(fetchAdminProductDeletes, con, vars);

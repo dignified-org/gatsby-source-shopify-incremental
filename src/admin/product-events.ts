@@ -9,29 +9,32 @@ import { fetchStorefrontProductsByIds } from '../queries';
 type R = AsyncGenerator<Event<ProductNodeFragment>>;
 
 export async function* productEventsSince(client: Client, since: Date): R {
-  for await (let deletedProductEdges of adminProductDeletes(client, since)) {
-    for (let edge of deletedProductEdges) {
+  for await (let deletedProductNodes of adminProductDeletes(client, since)) {
+    for (let node of deletedProductNodes) {
       yield {
         type: EventType.Delete,
         resource: NodeType.PRODUCT,
-        storefrontId: Buffer.from(edge.node.subjectId).toString('base64'),
+        storefrontId: Buffer.from(node.subjectId).toString('base64'),
       };
     }
   }
 
   let published = [];
-  for await (let updatedProductEdges of adminProductUpdates(client, since)) {
-    for (let edge of updatedProductEdges) {
-      if (edge.node.published) {
-        published.push(edge.node.storefrontId);
+  for await (let updatedProductNodes of adminProductUpdates(client, since)) {
+    for (let node of updatedProductNodes) {
+      if (node.published) {
+        published.push(node.storefrontId);
       } else {
         yield {
           type: EventType.Delete,
           resource: NodeType.PRODUCT,
-          storefrontId: edge.node.storefrontId,
+          storefrontId: node.storefrontId,
         };
       }
     }
+
+    // TODO avoid this duplication without
+    // published array getting large
 
     // Emit updates here to avoid published
     // array getting very large

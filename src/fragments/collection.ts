@@ -10,7 +10,7 @@ export function collectionFragment(version: ApiVersion) {
       image {
         altText
         id
-        src # TODO mark as deprecated
+        src
         originalSrc
       }
       products(first: 250) {

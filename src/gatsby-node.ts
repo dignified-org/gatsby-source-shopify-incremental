@@ -58,7 +58,7 @@ export async function sourceNodes(context: GatsbyContext, pluginConfig: unknown)
     // a 5m delta seems to catch all the needed updates
     const since = new Date(lastProductImport - (5 * 60 * 1000)); 
 
-    reporter.info(`[Shopify] Importing product changes from last ${formatDistanceToNowStrict(since)} (since ${since.toDateString().substring(0, 19)})`);
+    reporter.info(`[Shopify] Importing product changes from last ${formatDistanceToNowStrict(since)} (since ${since.toISOString().substring(0, 19)})`);
 
     // Ensure nodes are not garbage collected
     getNodesByType(`${TYPE_PREFIX}${NodeType.PRODUCT}`).forEach((node: GatsbyNode) => touchNode({ nodeId: node.id }));
