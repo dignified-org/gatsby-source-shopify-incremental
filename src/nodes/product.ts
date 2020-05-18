@@ -102,8 +102,10 @@ const ProductVariantMetafieldNode = createNodeFactory(
 
 export async function createProductNode(
   product: ProductNodeFragment,
-  createNode: GatsbyNodeCreator,
+  actions: NodeActions,
 ) {
+  const { createNode } = actions;
+
   // Create all metafield nodes
   await Promise.all(
     product.metafields.edges
@@ -179,7 +181,6 @@ export async function upsertProductNode(
   event: CreationEvent<ProductNodeFragment>,
   actions: NodeActions,
 ) {
-  const { createNode } = actions;
   await deleteProductNode(event.storefrontId, actions);
-  await createProductNode(event.node, createNode);
+  await createProductNode(event.node, actions);
 }

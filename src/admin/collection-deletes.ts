@@ -1,15 +1,20 @@
 import { Client } from '../client';
-import { ProductDeletesQueryVariables, ProductDeletesQuery } from './types';
+import {
+  CollectionDeletesQueryVariables,
+  CollectionDeletesQuery,
+} from './types';
 import { QueryResult } from '../types';
 import { batchAllNodesFactory } from './util';
 
-const PRODUCT_DELETES_QUERY = /* GraphQL */ `
-  query ProductDeletes($first: Int!, $after: String, $query: String) {
+// TODO merge with product deletes query
+
+const COLLECTION_DELETES_QUERY = /* GraphQL */ `
+  query CollectionDeletes($first: Int!, $after: String, $query: String) {
     deletionEvents(
       first: $first
       after: $after
       query: $query
-      subjectTypes: [PRODUCT]
+      subjectTypes: [COLLECTION]
       sortKey: CREATED_AT
       reverse: true
     ) {
@@ -27,24 +32,24 @@ const PRODUCT_DELETES_QUERY = /* GraphQL */ `
   }
 `;
 
-async function fetchAdminProductDeletes(
+async function fetchAdminCollectionDeletes(
   client: Client,
-  variables: ProductDeletesQueryVariables,
+  variables: CollectionDeletesQueryVariables,
 ) {
   const { data } = (await client.admin({
     url: '/graphql.json',
     method: 'post',
     data: {
-      query: PRODUCT_DELETES_QUERY,
+      query: COLLECTION_DELETES_QUERY,
       variables,
     },
-  })) as QueryResult<ProductDeletesQuery>;
+  })) as QueryResult<CollectionDeletesQuery>;
 
   return data.data.deletionEvents;
 }
 
 function con(
-  node: ProductDeletesQuery['deletionEvents']['edges'][0]['node'],
+  node: CollectionDeletesQuery['deletionEvents']['edges'][0]['node'],
   since: Date,
 ) {
   return new Date(node.occurredAt) > since;
@@ -59,10 +64,10 @@ function vars(since: Date) {
 }
 
 /**
- * Generates product deletes in batches of 50
+ * Generates collection deletes in batches of 50
  */
-export const adminProductDeletes = batchAllNodesFactory(
-  fetchAdminProductDeletes,
+export const adminCollectionDeletes = batchAllNodesFactory(
+  fetchAdminCollectionDeletes,
   con,
   vars,
 );

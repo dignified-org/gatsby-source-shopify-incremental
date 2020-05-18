@@ -1,11 +1,14 @@
 import { Client } from '../client';
-import { ProductUpdatesQueryVariables, ProductUpdatesQuery } from './types';
+import {
+  CollectionUpdatesQueryVariables,
+  CollectionUpdatesQuery,
+} from './types';
 import { QueryResult } from '../types';
 import { batchAllNodesFactory } from './util';
 
-const PRODUCT_UPDATES_QUERY = /* GraphQL */ `
-  query ProductUpdates($first: Int!, $after: String, $query: String) {
-    products(
+const COLLECTION_UPDATES_QUERY = /* GraphQL */ `
+  query CollectionUpdates($first: Int!, $after: String, $query: String) {
+    collections(
       first: $first
       after: $after
       query: $query
@@ -28,24 +31,24 @@ const PRODUCT_UPDATES_QUERY = /* GraphQL */ `
   }
 `;
 
-async function fetchAdminProductUpdates(
+async function fetchAdminCollectionUpdates(
   client: Client,
-  variables: ProductUpdatesQueryVariables,
+  variables: CollectionUpdatesQueryVariables,
 ) {
   const { data } = (await client.admin({
     url: '/graphql.json',
     method: 'post',
     data: {
-      query: PRODUCT_UPDATES_QUERY,
+      query: COLLECTION_UPDATES_QUERY,
       variables,
     },
-  })) as QueryResult<ProductUpdatesQuery>;
+  })) as QueryResult<CollectionUpdatesQuery>;
 
-  return data.data.products;
+  return data.data.collections;
 }
 
 function con(
-  node: ProductUpdatesQuery['products']['edges'][0]['node'],
+  node: CollectionUpdatesQuery['collections']['edges'][0]['node'],
   since: Date,
 ) {
   return new Date(node.updatedAt) > since;
@@ -62,8 +65,8 @@ function vars(since: Date) {
 /**
  * Generates product updates in batches of 50
  */
-export const adminProductUpdates = batchAllNodesFactory(
-  fetchAdminProductUpdates,
+export const adminCollectionUpdates = batchAllNodesFactory(
+  fetchAdminCollectionUpdates,
   con,
   vars,
 );

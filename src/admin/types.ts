@@ -16749,6 +16749,42 @@ export enum WeightUnit {
   Ounces = 'OUNCES',
 }
 
+export type CollectionDeletesQueryVariables = {
+  first: Scalars['Int'];
+  after?: Maybe<Scalars['String']>;
+  query?: Maybe<Scalars['String']>;
+};
+
+export type CollectionDeletesQuery = {
+  deletionEvents: {
+    edges: Array<
+      Pick<DeletionEventEdge, 'cursor'> & {
+        node: Pick<DeletionEvent, 'occurredAt' | 'subjectId'>;
+      }
+    >;
+    pageInfo: Pick<PageInfo, 'hasNextPage'>;
+  };
+};
+
+export type CollectionUpdatesQueryVariables = {
+  first: Scalars['Int'];
+  after?: Maybe<Scalars['String']>;
+  query?: Maybe<Scalars['String']>;
+};
+
+export type CollectionUpdatesQuery = {
+  collections: {
+    edges: Array<
+      Pick<CollectionEdge, 'cursor'> & {
+        node: Pick<Collection, 'id' | 'storefrontId' | 'updatedAt'> & {
+          published: Collection['publishedOnCurrentPublication'];
+        };
+      }
+    >;
+    pageInfo: Pick<PageInfo, 'hasNextPage'>;
+  };
+};
+
 export type ProductDeletesQueryVariables = {
   first: Scalars['Int'];
   after?: Maybe<Scalars['String']>;

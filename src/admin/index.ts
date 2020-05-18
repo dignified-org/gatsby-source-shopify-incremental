@@ -19,3 +19,6 @@ export interface DeletionEvent {
 }
 
 export type Event<N = any> = CreationEvent<N> | DeletionEvent;
+
+export * from './product-events';
+export * from './collection-events';

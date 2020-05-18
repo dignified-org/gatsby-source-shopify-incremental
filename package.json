@@ -1,7 +1,7 @@
 {
   "name": "gatsby-source-shopify-incremental",
   "scripts": {
-    "format": "prettier --write src/**/*.ts",
+    "format": "prettier --write src",
     "gen": "graphql-codegen --config codegen.yml",
     "watch": "tsc --watch"
   },

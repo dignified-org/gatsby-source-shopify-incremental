@@ -4956,6 +4956,39 @@ export type LoadCollectionsQuery = {
   };
 };
 
+export type LoadCollectionsByIdsQueryVariables = {
+  ids: Array<Scalars['ID']>;
+};
+
+export type LoadCollectionsByIdsQuery = {
+  nodes: Array<Maybe<CollectionNodeFragment>>;
+};
+
+export type GetPagesQueryVariables = {
+  first: Scalars['Int'];
+  after?: Maybe<Scalars['String']>;
+};
+
+export type GetPagesQuery = {
+  pages: {
+    pageInfo: Pick<PageInfo, 'hasNextPage'>;
+    edges: Array<
+      Pick<PageEdge, 'cursor'> & {
+        node: Pick<
+          Page,
+          | 'id'
+          | 'handle'
+          | 'title'
+          | 'body'
+          | 'bodySummary'
+          | 'updatedAt'
+          | 'url'
+        >;
+      }
+    >;
+  };
+};
+
 export type LoadProductsQueryVariables = {
   first: Scalars['Int'];
   after?: Maybe<Scalars['String']>;
@@ -4974,4 +5007,14 @@ export type LoadProductsByIdsQueryVariables = {
 
 export type LoadProductsByIdsQuery = {
   nodes: Array<Maybe<ProductNodeFragment>>;
+};
+
+export type LoadShopQueryVariables = {};
+
+export type LoadShopQuery = {
+  shop: {
+    privacyPolicy?: Maybe<Pick<ShopPolicy, 'body' | 'id' | 'title' | 'url'>>;
+    refundPolicy?: Maybe<Pick<ShopPolicy, 'body' | 'id' | 'title' | 'url'>>;
+    termsOfService?: Maybe<Pick<ShopPolicy, 'body' | 'id' | 'title' | 'url'>>;
+  };
 };

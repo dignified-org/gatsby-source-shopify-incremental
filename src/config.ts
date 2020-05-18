@@ -1,5 +1,5 @@
-import { object, string, mixed } from "yup";
-import { ApiVersion } from "./types";
+import { object, string, mixed, boolean } from 'yup';
+import { ApiVersion } from './types';
 
 /**
  * Inernal populated config
@@ -37,6 +37,21 @@ export interface PluginConfig {
    * Shopify api version to use
    */
   apiVersion: ApiVersion;
+
+  /**
+   * Import Shopify collections
+   */
+  includeCollections: boolean;
+
+  /**
+   * Import Shopify pages
+   */
+  includePages: boolean;
+
+  /**
+   * Import Shopify blogs
+   */
+  includeBlogs: boolean;
 }
 
 const PLUGIN_CONFIG_SCHEMA = object({
@@ -44,14 +59,19 @@ const PLUGIN_CONFIG_SCHEMA = object({
   adminAccessToken: string().required(),
   storefrontAccessToken: string().required(),
   storefrontShopDomain: string().optional(),
-  apiVersion: mixed<ApiVersion>().oneOf([ApiVersion.Apr2020, ApiVersion.Jul2020]).default(ApiVersion.Apr2020),
+  apiVersion: mixed<ApiVersion>()
+    .oneOf([ApiVersion.Apr2020, ApiVersion.Jul2020])
+    .default(ApiVersion.Apr2020),
+  includeCollections: boolean().default(true),
+  includePages: boolean().default(false),
+  includeBlogs: boolean().default(false),
 });
 
 export function parseConfig(input: unknown): PluginConfig {
-  const config =  PLUGIN_CONFIG_SCHEMA.validateSync(input);
+  const config = PLUGIN_CONFIG_SCHEMA.validateSync(input);
 
   return {
     ...config,
     storefrontShopDomain: config.storefrontShopDomain ?? config.myshopifyDomain,
-  }
+  };
 }

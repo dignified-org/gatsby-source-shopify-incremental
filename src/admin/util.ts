@@ -1,4 +1,4 @@
-import { Client } from "../client";
+import { Client } from '../client';
 
 // TODO clean up naming
 
@@ -17,11 +17,10 @@ export interface NodesFetcherResponse<T> {
   };
 }
 
-export interface NodesFetcher<
-  T,
-  V,
-> {
-  (client: Client, variables: NodesFetcherVariables & V): Promise<NodesFetcherResponse<T>>;
+export interface NodesFetcher<T, V> {
+  (client: Client, variables: NodesFetcherVariables & V): Promise<
+    NodesFetcherResponse<T>
+  >;
 }
 
 export interface Con<T, C = any> {
@@ -32,7 +31,12 @@ export interface Var<V, C> {
   (context: C): V;
 }
 
-export function batchAllNodesFactory<T, V, C = any>(fetcher: NodesFetcher<T, V>, con: Con<T, C>, vars: Var<V, C>, size: number = 50) {
+export function batchAllNodesFactory<T, V, C = any>(
+  fetcher: NodesFetcher<T, V>,
+  con: Con<T, C>,
+  vars: Var<V, C>,
+  size: number = 50,
+) {
   return async function* batchAllNodes(client: Client, context: C) {
     const variables = vars(context);
 
@@ -80,11 +84,9 @@ export function batchAllNodesFactory<T, V, C = any>(fetcher: NodesFetcher<T, V>,
         } = await fetcher(client, {
           ...variables,
           first: 250,
-          after: edges.length
-            ? edges[edges.length - 1].cursor
-            : batchCursor,
+          after: edges.length ? edges[edges.length - 1].cursor : batchCursor,
         }));
       }
     }
-  }
+  };
 }

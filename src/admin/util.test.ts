@@ -7,11 +7,15 @@ describe('batchAllNodesFactory', () => {
         edges: [],
         pageInfo: {
           hasNextPage: false,
-        }
-      }
+        },
+      };
     });
 
-    const batchNodes = batchAllNodesFactory(fetcher, () => true, () => undefined);
+    const batchNodes = batchAllNodesFactory(
+      fetcher,
+      () => true,
+      () => undefined,
+    );
 
     let batches = [];
 
@@ -25,14 +29,18 @@ describe('batchAllNodesFactory', () => {
   it('supports response size under batch size', async () => {
     const fetcher = jest.fn().mockImplementation(() => {
       return {
-        edges: Array.from(Array(10).keys(), i => ({ node: i, cursor: i })),
+        edges: Array.from(Array(10).keys(), (i) => ({ node: i, cursor: i })),
         pageInfo: {
           hasNextPage: false,
-        }
-      }
+        },
+      };
     });
 
-    const batchNodes = batchAllNodesFactory(fetcher, () => true, () => undefined);
+    const batchNodes = batchAllNodesFactory(
+      fetcher,
+      () => true,
+      () => undefined,
+    );
 
     let batches = [];
 
@@ -48,14 +56,21 @@ describe('batchAllNodesFactory', () => {
       const a = after ?? 0;
 
       return {
-        edges: Array.from(Array(after ? 34 : 50).keys(), i => ({ node: i + a, cursor: i + a })),
+        edges: Array.from(Array(after ? 34 : 50).keys(), (i) => ({
+          node: i + a,
+          cursor: i + a,
+        })),
         pageInfo: {
           hasNextPage: !after,
-        }
-      }
+        },
+      };
     });
 
-    const batchNodes = batchAllNodesFactory(fetcher, () => true, () => undefined);
+    const batchNodes = batchAllNodesFactory(
+      fetcher,
+      () => true,
+      () => undefined,
+    );
 
     let batches = [];
 
@@ -71,14 +86,21 @@ describe('batchAllNodesFactory', () => {
       const a = after ?? 0;
 
       return {
-        edges: Array.from(Array(after ? 34 : 50).keys(), i => ({ node: i + a, cursor: i + a })),
+        edges: Array.from(Array(after ? 34 : 50).keys(), (i) => ({
+          node: i + a,
+          cursor: i + a,
+        })),
         pageInfo: {
           hasNextPage: !after,
-        }
-      }
+        },
+      };
     });
 
-    const batchNodes = batchAllNodesFactory(fetcher, (n: number) => n < 73, () => undefined);
+    const batchNodes = batchAllNodesFactory(
+      fetcher,
+      (n: number) => n < 73,
+      () => undefined,
+    );
 
     let batches = [];
 
