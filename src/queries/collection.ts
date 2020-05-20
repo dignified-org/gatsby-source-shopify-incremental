@@ -32,14 +32,12 @@ async function fetchStorefrontCollections(
   client: Client,
   variables: LoadCollectionsQueryVariables,
 ) {
-  const { data } = (await client.storefront({
-    data: {
-      query: collectionsQuery(client.version),
-      variables,
-    },
-  })) as QueryResult<LoadCollectionsQuery>;
+  const data = await client.storefront<
+    LoadCollectionsQuery,
+    LoadCollectionsQueryVariables
+  >(collectionsQuery(client.version), variables);
 
-  return data.data.collections;
+  return data.collections;
 }
 
 export const loadAllStorefrontCollections = fetchAllNodesFactory(
@@ -65,12 +63,10 @@ export async function fetchStorefrontCollectionsByIds(
 ) {
   const variables: LoadCollectionsByIdsQueryVariables = { ids };
 
-  const { data } = (await client.storefront({
-    data: {
-      query: collectionsByIdsQuery(client.version),
-      variables,
-    },
-  })) as QueryResult<LoadCollectionsByIdsQuery>;
+  const data = await client.storefront<
+    LoadCollectionsByIdsQuery,
+    LoadCollectionsByIdsQueryVariables
+  >(collectionsByIdsQuery(client.version), variables);
 
-  return data.data.nodes;
+  return data.nodes;
 }

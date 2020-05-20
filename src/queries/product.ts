@@ -32,14 +32,12 @@ async function fetchStorefrontProducts(
   client: Client,
   variables: LoadProductsQueryVariables,
 ) {
-  const { data } = (await client.storefront({
-    data: {
-      query: productsQuery(client.version),
-      variables,
-    },
-  })) as QueryResult<LoadProductsQuery>;
+  const data = await client.storefront<
+    LoadProductsQuery,
+    LoadProductsQueryVariables
+  >(productsQuery(client.version), variables);
 
-  return data.data.products;
+  return data.products;
 }
 
 export const loadAllStorefrontProducts = fetchAllNodesFactory(
@@ -65,12 +63,10 @@ export async function fetchStorefrontProductsByIds(
 ) {
   const variables: LoadProductsByIdsQueryVariables = { ids };
 
-  const { data } = (await client.storefront({
-    data: {
-      query: productsByIdsQuery(client.version),
-      variables,
-    },
-  })) as QueryResult<LoadProductsByIdsQuery>;
+  const data = await client.storefront<
+    LoadProductsByIdsQuery,
+    LoadProductsByIdsQueryVariables
+  >(productsByIdsQuery(client.version), variables);
 
-  return data.data.nodes;
+  return data.nodes;
 }

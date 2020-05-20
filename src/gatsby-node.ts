@@ -6,20 +6,26 @@ import {
   loadAllStorefrontProducts,
   loadAllStorefrontCollections,
   fetchStorefrontShop,
+  loadAllStorefrontPages,
+  loadAllStorefrontBlogs,
+  loadAllStorefrontArticles,
 } from './queries';
 import {
   createProductNode,
   upsertProductNode,
   deleteProductNode,
+  createCollectionNode,
+  deleteCollectionNode,
   NodeActions,
   ShopPolicyNode,
+  createPageNode,
+  createBlogNode,
+  createArticleNode,
 } from './nodes';
-import { createCollectionNode, deleteCollectionNode } from './nodes/collection';
 import { TYPE_PREFIX, NodeType } from './constants';
 import { productEventsSince } from './admin/product-events';
 import { EventType, collectionEventsSince } from './admin';
 import { getCacheKey } from './cache';
-import { ShopPolicy } from './queries/types';
 
 // TODO do this based on the chosen api version
 exports.createSchemaCustomization = (
@@ -31,9 +37,11 @@ exports.createSchemaCustomization = (
   } = context;
 
   // TODO annotate based on API version
+  // TODO only add types based on included types
   const config = parseConfig(pluginConfig);
 
-  const typeDefs = `
+  const typeDefs = /* GraphQL */ `
+    # Product
     type ${TYPE_PREFIX}${NodeType.PRODUCT_VARIANT} implements Node {
       price: String! @deprecated(reason: "Use priceV2 instead")
       compareAtPrice: String @deprecated(reason: "Use compareAtPriceV2 instead")
@@ -43,8 +51,33 @@ exports.createSchemaCustomization = (
       updatedAt: Date! @dateformat
     }
 
+    # Collection
+    type ${TYPE_PREFIX}${NodeType.COLLECTION} implements Node {
+      updatedAt: Date! @dateformat
+    }
+
     type ${TYPE_PREFIX}${NodeType.COLLECTION}Image implements Node {
-      src: String @deprecated(reason: "Previously an image had a single src field. This could either return the original image location or a URL that contained transformations such as sizing or scale.")
+      src: String @deprecated(reason: "Previously an image had a single src field. This could either return the original image location or a URL that contained transformations such as sizing or scale.\\n\\nThese transformations were specified by arguments on the parent field.")
+    }
+
+    # Page
+    type ${TYPE_PREFIX}${NodeType.PAGE} implements Node {
+      updatedAt: Date! @dateformat
+      createdAt: Date! @dateformat
+    }
+
+    # Article
+    type ${TYPE_PREFIX}${NodeType.ARTICLE}Author implements Node {
+      id: ID!
+    }
+
+    type ${TYPE_PREFIX}${NodeType.ARTICLE}Image implements Node {
+      src: String! @deprecated(reason: "Previously an image had a single src field. This could either return the original image location or a URL that contained transformations such as sizing or scale.\\n\\nThese transformations were specified by arguments on the parent field.")
+    }
+
+    type ${TYPE_PREFIX}${NodeType.ARTICLE} implements Node {
+      author: ${TYPE_PREFIX}${NodeType.ARTICLE}Author! @deprecated(reason: "Use authorV2 instead")
+      publishedAt: Date! @dateformat
     }
   `;
 
@@ -108,6 +141,7 @@ export async function sourceNodes(
     );
 
     // Ensure nodes are not garbage collected
+    // TODO clean this up
     getNodesByType(
       `${TYPE_PREFIX}${NodeType.PRODUCT}`,
     ).forEach((node: GatsbyNode) => touchNode({ nodeId: node.id }));
@@ -192,13 +226,33 @@ export async function sourceNodes(
 
   // Following types are not yet incremental
 
-  // if (config.includePages) {
-  //   reporter.info('[Shopify] Starting full page import');
-  //   let count = 0;
-  //   for await (let collection of loadAllStorefrontCollections(client)) {
-  //     await createCollectionNode(collection, nodeActions);
-  //     count++;
-  //   }
-  //   reporter.info(`[Shopify] Finished importing ${count} pages`);
-  // }
+  // Pages
+  if (config.includePages) {
+    reporter.info('[Shopify] Starting full page import');
+    let count = 0;
+    for await (let page of loadAllStorefrontPages(client)) {
+      await createPageNode(page, nodeActions);
+      count++;
+    }
+    reporter.info(`[Shopify] Finished importing ${count} pages`);
+  }
+
+  // Blogs and Articles
+  if (config.includeBlogs) {
+    reporter.info('[Shopify] Starting blog import');
+    let count = 0;
+    for await (let blog of loadAllStorefrontBlogs(client)) {
+      await createBlogNode(blog, nodeActions);
+      count++;
+    }
+    reporter.info(`[Shopify] Finished importing ${count} blogs`);
+
+    reporter.info('[Shopify] Starting article import');
+    count = 0;
+    for await (let article of loadAllStorefrontArticles(client)) {
+      await createArticleNode(article, nodeActions);
+      count++;
+    }
+    reporter.info(`[Shopify] Finished importing ${count} articles`);
+  }
 }

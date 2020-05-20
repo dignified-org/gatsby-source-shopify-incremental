@@ -1,73 +1,40 @@
-export const ARTICLES_QUERY = `
-  query GetArticles($first: Int!, $after: String) {
-    articles(first: $first, after: $after) {
-      pageInfo {
-        hasNextPage
-      }
-      edges {
-        cursor
-        node {
-          author {
-            bio
-            email
-            firstName
-            lastName
-            name
-          }
-          blog {
-            id
-          }
-          comments(first: 250) {
-            edges {
-              node {
-                author {
-                  email
-                  name
-                }
-                content
-                contentHtml
-                id
-              }
-            }
-          }
-          content
-          contentHtml
-          excerpt
-          excerptHtml
-          id
-          image {
-            altText
-            id
-            src
-          }
-          publishedAt
-          tags
-          title
-          url
-          seo {
-            title
-            description
-          }
-        }
-      }
-    }
-  }
-`
+import { Client } from '../client';
+import { QueryResult, ApiVersion } from '../types';
+import { LoadBlogsQuery, LoadBlogsQueryVariables } from './types';
+import { fetchAllNodesFactory } from './util';
+import { blogFragment } from '../fragments';
 
-export const BLOGS_QUERY = `
-  query GetBlogs($first: Int!, $after: String) {
-    blogs(first: $first, after: $after) {
-      pageInfo {
-        hasNextPage
-      }
-      edges {
-        cursor
-        node {
-          id
-          title
-          url
+export function blogsQuery(version: ApiVersion) {
+  return /* GraphQL */ `
+    ${blogFragment(version)}
+    query LoadBlogs($first: Int!, $after: String) {
+      blogs(first: $first, after: $after) {
+        pageInfo {
+          hasNextPage
+        }
+        edges {
+          cursor
+          node {
+            ...BlogNode
+          }
         }
       }
     }
-  }
-`
+  `;
+}
+
+async function fetchStorefrontBlogs(
+  client: Client,
+  variables: LoadBlogsQueryVariables,
+) {
+  const data = await client.storefront<LoadBlogsQuery, LoadBlogsQueryVariables>(
+    blogsQuery(client.version),
+    variables,
+  );
+
+  return data.blogs;
+}
+
+export const loadAllStorefrontBlogs = fetchAllNodesFactory(
+  fetchStorefrontBlogs,
+);

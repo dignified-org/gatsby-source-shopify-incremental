@@ -17,13 +17,6 @@ function productVariantFragment(version: ApiVersion) {
         id
         originalSrc
       }
-      metafields(first: 250) {
-        edges {
-          node {
-            ...MetafieldNode
-          }
-        }
-      }
       price
       priceV2 {
         amount
@@ -52,6 +45,27 @@ function productVariantFragment(version: ApiVersion) {
           }
         }
       }
+      presentmentUnitPrices(first: 250) {
+        edges {
+          node {
+            amount
+            currencyCode
+          }
+        }
+      }
+      unitPrice {
+        amount
+        currencyCode
+      }
+      unitPriceMeasurement {
+        measuredType
+        quantityUnit
+        quantityValue
+        referenceUnit
+        referenceValue
+      }
+      weight
+      weightUnit
     }
   `;
 }
@@ -75,11 +89,16 @@ export function productFragment(version: ApiVersion) {
           }
         }
       }
-      metafields(first: 250) {
+      media(first: 250) {
         edges {
           node {
-            # Included in variant fragment
-            ...MetafieldNode
+            alt
+            mediaContentType
+            previewImage {
+              altText
+              id
+              originalSrc
+            }
           }
         }
       }
@@ -88,6 +107,20 @@ export function productFragment(version: ApiVersion) {
         id
         name
         values
+      }
+      presentmentPriceRanges(first: 250) {
+        edges {
+          node {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+            maxVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+        }
       }
       priceRange {
         minVariantPrice {
@@ -104,14 +137,17 @@ export function productFragment(version: ApiVersion) {
       tags
       title
       updatedAt
-      variants(first: 250) {
-        edges {
-          node {
-            ...ProductVariantNode
-          }
+      vendor
+      compareAtPriceRange {
+        maxVariantPrice {
+          amount
+          currencyCode
+        }
+        minVariantPrice {
+          amount
+          currencyCode
         }
       }
-      vendor
     }
   `;
 }

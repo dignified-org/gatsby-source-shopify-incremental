@@ -4867,6 +4867,33 @@ export enum WeightUnit {
   Ounces = 'OUNCES',
 }
 
+export type ArticleNodeFragment = Pick<
+  Article,
+  | 'content'
+  | 'contentHtml'
+  | 'excerpt'
+  | 'excerptHtml'
+  | 'id'
+  | 'publishedAt'
+  | 'tags'
+  | 'title'
+  | 'handle'
+  | 'url'
+> & {
+  author: Pick<
+    ArticleAuthor,
+    'bio' | 'email' | 'firstName' | 'lastName' | 'name'
+  >;
+  authorV2?: Maybe<
+    Pick<ArticleAuthor, 'bio' | 'email' | 'firstName' | 'lastName' | 'name'>
+  >;
+  blog: Pick<Blog, 'id'>;
+  image?: Maybe<Pick<Image, 'altText' | 'id' | 'src' | 'originalSrc'>>;
+  seo?: Maybe<Pick<Seo, 'title' | 'description'>>;
+};
+
+export type BlogNodeFragment = Pick<Blog, 'id' | 'title' | 'handle' | 'url'>;
+
 export type CollectionNodeFragment = Pick<
   Collection,
   'description' | 'descriptionHtml' | 'handle' | 'id' | 'title' | 'updatedAt'
@@ -4887,6 +4914,18 @@ export type MetafieldNodeFragment = Pick<
   | 'updatedAt'
 >;
 
+export type PageNodeFragment = Pick<
+  Page,
+  | 'id'
+  | 'handle'
+  | 'title'
+  | 'body'
+  | 'bodySummary'
+  | 'updatedAt'
+  | 'createdAt'
+  | 'url'
+>;
+
 export type ProductVariantNodeFragment = Pick<
   ProductVariant,
   | 'availableForSale'
@@ -4901,7 +4940,6 @@ export type ProductVariantNodeFragment = Pick<
 > & {
   compareAtPriceV2?: Maybe<Pick<MoneyV2, 'amount' | 'currencyCode'>>;
   image?: Maybe<Pick<Image, 'altText' | 'id' | 'originalSrc'>>;
-  metafields: { edges: Array<{ node: MetafieldNodeFragment }> };
   priceV2: Pick<MoneyV2, 'amount' | 'currencyCode'>;
   selectedOptions: Array<Pick<SelectedOption, 'name' | 'value'>>;
   presentmentPrices: {
@@ -4912,6 +4950,20 @@ export type ProductVariantNodeFragment = Pick<
       };
     }>;
   };
+  presentmentUnitPrices: {
+    edges: Array<{ node: Pick<MoneyV2, 'amount' | 'currencyCode'> }>;
+  };
+  unitPrice?: Maybe<Pick<MoneyV2, 'amount' | 'currencyCode'>>;
+  unitPriceMeasurement?: Maybe<
+    Pick<
+      UnitPriceMeasurement,
+      | 'measuredType'
+      | 'quantityUnit'
+      | 'quantityValue'
+      | 'referenceUnit'
+      | 'referenceValue'
+    >
+  >;
 };
 
 export type ProductNodeFragment = Pick<
@@ -4933,13 +4985,64 @@ export type ProductNodeFragment = Pick<
   images: {
     edges: Array<{ node: Pick<Image, 'id' | 'altText' | 'originalSrc'> }>;
   };
-  metafields: { edges: Array<{ node: MetafieldNodeFragment }> };
+  media: {
+    edges: Array<{
+      node:
+        | (Pick<ExternalVideo, 'alt' | 'mediaContentType'> & {
+            previewImage?: Maybe<Pick<Image, 'altText' | 'id' | 'originalSrc'>>;
+          })
+        | (Pick<MediaImage, 'alt' | 'mediaContentType'> & {
+            previewImage?: Maybe<Pick<Image, 'altText' | 'id' | 'originalSrc'>>;
+          })
+        | (Pick<Model3d, 'alt' | 'mediaContentType'> & {
+            previewImage?: Maybe<Pick<Image, 'altText' | 'id' | 'originalSrc'>>;
+          })
+        | (Pick<Video, 'alt' | 'mediaContentType'> & {
+            previewImage?: Maybe<Pick<Image, 'altText' | 'id' | 'originalSrc'>>;
+          });
+    }>;
+  };
   options: Array<Pick<ProductOption, 'id' | 'name' | 'values'>>;
+  presentmentPriceRanges: {
+    edges: Array<{
+      node: {
+        minVariantPrice: Pick<MoneyV2, 'amount' | 'currencyCode'>;
+        maxVariantPrice: Pick<MoneyV2, 'amount' | 'currencyCode'>;
+      };
+    }>;
+  };
   priceRange: {
     minVariantPrice: Pick<MoneyV2, 'amount' | 'currencyCode'>;
     maxVariantPrice: Pick<MoneyV2, 'amount' | 'currencyCode'>;
   };
-  variants: { edges: Array<{ node: ProductVariantNodeFragment }> };
+  compareAtPriceRange: {
+    maxVariantPrice: Pick<MoneyV2, 'amount' | 'currencyCode'>;
+    minVariantPrice: Pick<MoneyV2, 'amount' | 'currencyCode'>;
+  };
+};
+
+export type LoadArticlesQueryVariables = {
+  first: Scalars['Int'];
+  after?: Maybe<Scalars['String']>;
+};
+
+export type LoadArticlesQuery = {
+  articles: {
+    pageInfo: Pick<PageInfo, 'hasNextPage'>;
+    edges: Array<Pick<ArticleEdge, 'cursor'> & { node: ArticleNodeFragment }>;
+  };
+};
+
+export type LoadBlogsQueryVariables = {
+  first: Scalars['Int'];
+  after?: Maybe<Scalars['String']>;
+};
+
+export type LoadBlogsQuery = {
+  blogs: {
+    pageInfo: Pick<PageInfo, 'hasNextPage'>;
+    edges: Array<Pick<BlogEdge, 'cursor'> & { node: BlogNodeFragment }>;
+  };
 };
 
 export type LoadCollectionsQueryVariables = {
@@ -4964,28 +5067,15 @@ export type LoadCollectionsByIdsQuery = {
   nodes: Array<Maybe<CollectionNodeFragment>>;
 };
 
-export type GetPagesQueryVariables = {
+export type LoadPagesQueryVariables = {
   first: Scalars['Int'];
   after?: Maybe<Scalars['String']>;
 };
 
-export type GetPagesQuery = {
+export type LoadPagesQuery = {
   pages: {
     pageInfo: Pick<PageInfo, 'hasNextPage'>;
-    edges: Array<
-      Pick<PageEdge, 'cursor'> & {
-        node: Pick<
-          Page,
-          | 'id'
-          | 'handle'
-          | 'title'
-          | 'body'
-          | 'bodySummary'
-          | 'updatedAt'
-          | 'url'
-        >;
-      }
-    >;
+    edges: Array<Pick<PageEdge, 'cursor'> & { node: PageNodeFragment }>;
   };
 };
 
