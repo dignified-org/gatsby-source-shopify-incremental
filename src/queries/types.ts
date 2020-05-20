@@ -9,20 +9,20 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** An ISO-8601 encoded UTC date time string. Example value: `"2019-07-03T20:47:55Z"`. */
+  DateTime: any;
+  /** A signed decimal number, which supports arbitrary precision and is serialized as a string. Example value: `"29.99"`. */
+  Decimal: any;
+  /** A string containing HTML code. Example value: `"<p>Grey cotton knit sweater.</p>"`. */
+  HTML: any;
+  /** A monetary value string. Example value: `"100.57"`. */
+  Money: any;
   /**
    * An RFC 3986 and RFC 3987 compliant URI string.
    *
    * Example value: `"https://johns-apparel.myshopify.com"`.
    */
   URL: any;
-  /** A string containing HTML code. Example value: `"<p>Grey cotton knit sweater.</p>"`. */
-  HTML: any;
-  /** An ISO-8601 encoded UTC date time string. Example value: `"2019-07-03T20:47:55Z"`. */
-  DateTime: any;
-  /** A monetary value string. Example value: `"100.57"`. */
-  Money: any;
-  /** A signed decimal number, which supports arbitrary precision and is serialized as a string. Example value: `"29.99"`. */
-  Decimal: any;
 };
 
 /** A version of the API. */
@@ -4942,6 +4942,7 @@ export type ProductVariantNodeFragment = Pick<
   image?: Maybe<Pick<Image, 'altText' | 'id' | 'originalSrc'>>;
   priceV2: Pick<MoneyV2, 'amount' | 'currencyCode'>;
   selectedOptions: Array<Pick<SelectedOption, 'name' | 'value'>>;
+  metafields: { edges: Array<{ node: MetafieldNodeFragment }> };
   presentmentPrices: {
     edges: Array<{
       node: {
@@ -4985,6 +4986,7 @@ export type ProductNodeFragment = Pick<
   images: {
     edges: Array<{ node: Pick<Image, 'id' | 'altText' | 'originalSrc'> }>;
   };
+  metafields: { edges: Array<{ node: MetafieldNodeFragment }> };
   media: {
     edges: Array<{
       node:
@@ -5015,6 +5017,7 @@ export type ProductNodeFragment = Pick<
     minVariantPrice: Pick<MoneyV2, 'amount' | 'currencyCode'>;
     maxVariantPrice: Pick<MoneyV2, 'amount' | 'currencyCode'>;
   };
+  variants: { edges: Array<{ node: ProductVariantNodeFragment }> };
   compareAtPriceRange: {
     maxVariantPrice: Pick<MoneyV2, 'amount' | 'currencyCode'>;
     minVariantPrice: Pick<MoneyV2, 'amount' | 'currencyCode'>;

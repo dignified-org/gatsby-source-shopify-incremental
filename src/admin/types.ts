@@ -9,33 +9,12 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /**
-   * An RFC 3986 and RFC 3987 compliant URI string.
-   *
-   * Example value: `"https://johns-apparel.myshopify.com"`.
-   */
-  URL: any;
-  /**
-   * An unsigned 64-bit integer. Represents whole numeric values between 0 and 2^64 - 1 encoded as a string of base-10 digits.
-   *
-   * Example value: `"50"`.
-   */
-  UnsignedInt64: any;
+  /** An [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) encoded UTC date string. Example value: `"2019-07-16"`. */
+  Date: any;
   /** An ISO-8601 encoded UTC date time string. Example value: `"2019-07-03T20:47:55Z"`. */
   DateTime: any;
   /** A signed decimal number, which supports arbitrary precision and is serialized as a string. Example value: `"29.99"`. */
   Decimal: any;
-  /** A string containing HTML code. Example value: `"<p>Grey cotton knit sweater.</p>"`. */
-  HTML: any;
-  /**
-   * Represents a unique identifier in the Storefront API. A `StorefrontID` value can
-   * be used wherever an ID is expected in the Storefront API.
-   *
-   * Example value: `"Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0LzEwMDc5Nzg1MTAw"`.
-   */
-  StorefrontID: any;
-  /** A monetary value string. Example value: `"100.57"`. */
-  Money: any;
   /**
    * A string containing a strict subset of HTML code. Non-allowed tags will be stripped out.
    * Allowed tags:
@@ -50,10 +29,31 @@ export type Scalars = {
    * Example value: `"Your current domain is <strong>johns-apparel.myshopify.com</strong>."`
    */
   FormattedString: any;
+  /** A string containing HTML code. Example value: `"<p>Grey cotton knit sweater.</p>"`. */
+  HTML: any;
   /** A JSON Object. Example value: `{ "key1": "Value 1", "key2": "Value 2", "key3": 3 }` */
   JSON: any;
-  /** An [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) encoded UTC date string. Example value: `"2019-07-16"`. */
-  Date: any;
+  /** A monetary value string. Example value: `"100.57"`. */
+  Money: any;
+  /**
+   * Represents a unique identifier in the Storefront API. A `StorefrontID` value can
+   * be used wherever an ID is expected in the Storefront API.
+   *
+   * Example value: `"Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0LzEwMDc5Nzg1MTAw"`.
+   */
+  StorefrontID: any;
+  /**
+   * An unsigned 64-bit integer. Represents whole numeric values between 0 and 2^64 - 1 encoded as a string of base-10 digits.
+   *
+   * Example value: `"50"`.
+   */
+  UnsignedInt64: any;
+  /**
+   * An RFC 3986 and RFC 3987 compliant URI string.
+   *
+   * Example value: `"https://johns-apparel.myshopify.com"`.
+   */
+  URL: any;
   /**
    * Time between UTC time and a location's observed time, in the format `"+HH:MM"` or `"-HH:MM"`.
    *

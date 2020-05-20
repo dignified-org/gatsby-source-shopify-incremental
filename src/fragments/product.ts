@@ -31,6 +31,14 @@ function productVariantFragment(version: ApiVersion) {
       title
       weight
       weightUnit
+      metafields(first: 250) {
+        edges {
+          node {
+            # Included in variant fragment
+            ...MetafieldNode
+          }
+        }
+      }
       presentmentPrices(first: 250) {
         edges {
           node {
@@ -89,6 +97,14 @@ export function productFragment(version: ApiVersion) {
           }
         }
       }
+      metafields(first: 250) {
+        edges {
+          node {
+            # Included in variant fragment
+            ...MetafieldNode
+          }
+        }
+      }
       media(first: 250) {
         edges {
           node {
@@ -137,6 +153,13 @@ export function productFragment(version: ApiVersion) {
       tags
       title
       updatedAt
+      variants(first: 250) {
+        edges {
+          node {
+            ...ProductVariantNode
+          }
+        }
+      }
       vendor
       compareAtPriceRange {
         maxVariantPrice {
