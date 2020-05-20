@@ -10,6 +10,8 @@ This plugin also supports incremental builds. In order to try out incremental bu
 GATSBY_EXPERIMENTAL_PAGE_BUILD_ON_DATA_CHANGES=true yarn build --log-pages
 ```
 
+Currently only products and collections are incrementally fetched. I have plans to support pages, blogs, and articles as well but they are lower priority (and use a completely different method).  
+
 ### Changes from gatsby-source-shopify
 1. No longer import article comments
 1. Product options are no longer their own node
