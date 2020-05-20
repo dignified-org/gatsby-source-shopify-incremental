@@ -1,0 +1,11 @@
+src
+test
+.vscode
+.eslintrc
+.gitignore
+.editorconfig
+.prettierrc
+.travis.yml
+jest-config.js
+package-lock.json
+tsconfig.json
