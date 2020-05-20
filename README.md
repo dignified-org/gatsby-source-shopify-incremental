@@ -79,26 +79,26 @@ interface Config {
 
   /**
    * Import Shopify collections
-   * Optional - default to true
+   * Optional - defaults to true
    */
   includeCollections: boolean;
 
   /**
    * Import Shopify pages
-   * Optional - default to false
+   * Optional - defaults to false
    */
   includePages: boolean;
 
   /**
    * Import Shopify blogs
-   * Optional - default to false
+   * Optional - defaults to false
    */
   includeBlogs: boolean;
 
   /**
    * Indicate if you are Shopify plus
    * This will change the rate limits
-   * Optional - default to false
+   * Optional - defaults to false
    */
   shopifyPlus: boolean;
 }
