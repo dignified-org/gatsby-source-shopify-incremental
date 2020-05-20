@@ -2,7 +2,7 @@
 
 This is in **alpha** - use at your own risk
 
-This source plugin aims to improve over the existing `gatsby-source-shopify` by supporting incremental data fetching. This means that your **first** build will be just as long but subsequent builds will only need to fetch data that has changed. In my testing on store with 1024 products, initial builds take around 90s and subsequent are around 10s.
+This source plugin aims to improve over the existing `gatsby-source-shopify` by supporting incremental data fetching. This means that your **first** build will be just as long but subsequent builds will only need to fetch data that has changed. In my testing on a store with 1024 products, initial builds take around 90s and subsequent are around 10s.
 
 This plugin also supports incremental builds. In order to try out incremental builds, ensure the `GATSBY_EXPERIMENTAL_PAGE_BUILD_ON_DATA_CHANGES` environment variable is `true`.
 
@@ -33,7 +33,7 @@ yarn add gatsby-source-shopify-incremental
 
 TODO
 
-## Available options (if any)
+## Available options
 
 ```ts
 interface Config {
