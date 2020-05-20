@@ -104,7 +104,7 @@ interface Config {
 }
 ```
 
-## How to query for data (source plugins only)
+## How to query for data
 
 For now please reference the `gatsby-source-shopify` plugin. Querying should be essentially the same.
 
@@ -150,3 +150,5 @@ Additional commands:
     ```
 
 ## How to contribute
+
+TODO
