@@ -1,6 +1,33 @@
 {
   "name": "gatsby-source-shopify-incremental",
+  "description": "Gatsby source plugin for Shopify",
+  "version": "1.0.0-alpha.0",
+  "author": "Dignified <public@dignified.app>",
+  "contributors": [
+    {
+      "name": "Quinn Blenkinsop",
+      "email": "quinn@blenkinsop.net"
+    }
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "repository": "https://github.com/dignified-org/gatsby-source-shopify-incremental",
+  "homepage": "https://github.com/dignified-org/gatsby-source-shopify-incremental#readme",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dignified-org/gatsby-source-shopify-incremental/issues"
+  },
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin",
+    "gatsby-source-plugin",
+    "shopify"
+  ],
+  "main": "index.js",
   "scripts": {
+    "test": "jest",
+    "build": "tsc",
     "format": "prettier --write src",
     "gen": "graphql-codegen --config codegen.yml",
     "watch": "tsc --watch"
