@@ -26,8 +26,10 @@ export function blogsQuery(version: ApiVersion) {
 async function fetchStorefrontBlogs(
   client: Client,
   variables: LoadBlogsQueryVariables,
+  page: number,
 ) {
   const data = await client.storefront<LoadBlogsQuery, LoadBlogsQueryVariables>(
+    `blogs-${page}`,
     blogsQuery(client.version),
     variables,
   );

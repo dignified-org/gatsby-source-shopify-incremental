@@ -28,6 +28,7 @@ export const SHOP_POLICIES_QUERY = /* GraphQL */ `
 
 export async function fetchStorefrontShop(client: Client) {
   const data = await client.storefront<LoadShopQuery, undefined>(
+    'shop',
     SHOP_POLICIES_QUERY,
   );
 

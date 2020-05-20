@@ -26,11 +26,12 @@ export function articlesQuery(version: ApiVersion) {
 async function fetchStorefrontArticles(
   client: Client,
   variables: LoadArticlesQueryVariables,
+  page: number,
 ) {
   const data = await client.storefront<
     LoadArticlesQuery,
     LoadArticlesQueryVariables
-  >(articlesQuery(client.version), variables);
+  >(`articles-${page}`, articlesQuery(client.version), variables);
 
   return data.articles;
 }

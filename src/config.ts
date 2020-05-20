@@ -52,6 +52,12 @@ export interface PluginConfig {
    * Import Shopify blogs
    */
   includeBlogs: boolean;
+
+  /**
+   * Indicate if you are Shopify plus
+   * This will change the rate limits
+   */
+  shopifyPlus: boolean;
 }
 
 const PLUGIN_CONFIG_SCHEMA = object({
@@ -65,6 +71,7 @@ const PLUGIN_CONFIG_SCHEMA = object({
   includeCollections: boolean().default(true),
   includePages: boolean().default(false),
   includeBlogs: boolean().default(false),
+  shopifyPlus: boolean().default(false),
 });
 
 export function parseConfig(input: unknown): PluginConfig {

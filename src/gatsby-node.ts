@@ -99,7 +99,7 @@ export async function sourceNodes(
   } = context;
 
   const config = parseConfig(pluginConfig);
-  const client = createClient(config);
+  const client = createClient(config, reporter);
 
   const nodeActions: NodeActions = { getNode, createNode, deleteNode };
 
@@ -255,4 +255,6 @@ export async function sourceNodes(
     }
     reporter.info(`[Shopify] Finished importing ${count} articles`);
   }
+
+  client.destroy();
 }

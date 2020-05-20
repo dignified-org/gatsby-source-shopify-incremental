@@ -33,8 +33,9 @@ export interface GatsbyReporter {
   info: (msg: string) => null;
   warn: (msg: string) => null;
   error: (msg: string) => null;
-  panic: (msg: string) => null;
-  panicOnBuild: (msg: string) => null;
+  panic: (msg: string, error?: Error) => null;
+  panicOnBuild: (msg: string, error?: Error) => null;
+  verbose: (msg: string) => null;
 }
 
 export interface GatsbyParentChildLink {

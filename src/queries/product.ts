@@ -5,7 +5,7 @@ import {
   LoadProductsByIdsQuery,
   LoadProductsByIdsQueryVariables,
 } from './types';
-import { ApiVersion, QueryResult } from '../types';
+import { ApiVersion } from '../types';
 import { productFragment } from '../fragments';
 import { fetchAllNodesFactory } from './util';
 
@@ -31,11 +31,12 @@ function productsQuery(version: ApiVersion) {
 async function fetchStorefrontProducts(
   client: Client,
   variables: LoadProductsQueryVariables,
+  page: number,
 ) {
   const data = await client.storefront<
     LoadProductsQuery,
     LoadProductsQueryVariables
-  >(productsQuery(client.version), variables);
+  >(`products-${page}`, productsQuery(client.version), variables);
 
   return data.products;
 }
@@ -66,7 +67,7 @@ export async function fetchStorefrontProductsByIds(
   const data = await client.storefront<
     LoadProductsByIdsQuery,
     LoadProductsByIdsQueryVariables
-  >(productsByIdsQuery(client.version), variables);
+  >('products-by-ids', productsByIdsQuery(client.version), variables);
 
   return data.nodes;
 }

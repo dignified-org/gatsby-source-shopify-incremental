@@ -26,8 +26,10 @@ export function pagesQuery(version: ApiVersion) {
 async function fetchStorefrontPages(
   client: Client,
   variables: LoadPagesQueryVariables,
+  page: number,
 ) {
   const data = await client.storefront<LoadPagesQuery, LoadPagesQueryVariables>(
+    `pages-${page}`,
     pagesQuery(client.version),
     variables,
   );

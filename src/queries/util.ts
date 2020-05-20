@@ -19,7 +19,9 @@ export interface NodesFetcher<
   T,
   V extends NodesFetcherVariables = NodesFetcherVariables
 > {
-  (client: Client, variables: V): Promise<NodesFetcherResponse<T>>;
+  (client: Client, variables: V, page: number): Promise<
+    NodesFetcherResponse<T>
+  >;
 }
 
 export function fetchAllNodesFactory<T>(fetcher: NodesFetcher<T>) {
@@ -27,15 +29,37 @@ export function fetchAllNodesFactory<T>(fetcher: NodesFetcher<T>) {
     client: Client,
     variables?: Omit<NodesFetcherVariables, 'first' | 'after'>,
   ) {
+    let page = 1;
+
     let {
       edges,
       pageInfo: { hasNextPage },
-    } = await fetcher(client, {
-      ...variables,
-      first: 250,
-    });
+    } = await fetcher(
+      client,
+      {
+        ...variables,
+        first: 150,
+      },
+      page,
+    );
+
+    let promise: null | Promise<NodesFetcherResponse<T>> = null;
 
     while (edges.length) {
+      if (!promise && hasNextPage) {
+        // Greedy fetching
+        page++;
+        promise = fetcher(
+          client,
+          {
+            ...variables,
+            first: 150,
+            after: edges[edges.length - 1].cursor,
+          },
+          page,
+        );
+      }
+
       const edge = edges.shift();
 
       if (!edge) {
@@ -44,15 +68,12 @@ export function fetchAllNodesFactory<T>(fetcher: NodesFetcher<T>) {
 
       yield edge.node;
 
-      if (!edges.length && hasNextPage) {
+      if (!edges.length && promise) {
         ({
           edges,
           pageInfo: { hasNextPage },
-        } = await fetcher(client, {
-          ...variables,
-          first: 250,
-          after: edge.cursor,
-        }));
+        } = await promise);
+        promise = null;
       }
     }
   };

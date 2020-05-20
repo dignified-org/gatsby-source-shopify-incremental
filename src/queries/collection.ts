@@ -31,11 +31,12 @@ function collectionsQuery(version: ApiVersion) {
 async function fetchStorefrontCollections(
   client: Client,
   variables: LoadCollectionsQueryVariables,
+  page: number,
 ) {
   const data = await client.storefront<
     LoadCollectionsQuery,
     LoadCollectionsQueryVariables
-  >(collectionsQuery(client.version), variables);
+  >(`collections-${page}`, collectionsQuery(client.version), variables);
 
   return data.collections;
 }
@@ -66,7 +67,7 @@ export async function fetchStorefrontCollectionsByIds(
   const data = await client.storefront<
     LoadCollectionsByIdsQuery,
     LoadCollectionsByIdsQueryVariables
-  >(collectionsByIdsQuery(client.version), variables);
+  >('collections-by-ids', collectionsByIdsQuery(client.version), variables);
 
   return data.nodes;
 }
