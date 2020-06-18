@@ -38,7 +38,7 @@ export function fetchAllNodesFactory<T>(fetcher: NodesFetcher<T>) {
       client,
       {
         ...variables,
-        first: 150,
+        first: 100,
       },
       page,
     );
@@ -53,7 +53,7 @@ export function fetchAllNodesFactory<T>(fetcher: NodesFetcher<T>) {
           client,
           {
             ...variables,
-            first: 150,
+            first: 100,
             after: edges[edges.length - 1].cursor,
           },
           page,
