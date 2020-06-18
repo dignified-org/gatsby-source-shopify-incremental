@@ -1,7 +1,7 @@
 {
   "name": "gatsby-source-shopify-incremental",
   "description": "Gatsby source plugin for Shopify",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "author": "Dignified <public@dignified.app>",
   "contributors": [
     {
@@ -66,7 +66,10 @@
       "changelog": "npx auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
     },
     "hooks": {
-      "after:bump": ["npx auto-changelog -p", "yarn build"]
+      "after:bump": [
+        "npx auto-changelog -p",
+        "yarn build"
+      ]
     }
   }
 }
