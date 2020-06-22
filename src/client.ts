@@ -45,15 +45,17 @@ export function createClient(
     },
   });
 
-  admin.interceptors.response.use(
-    function (response) {
-      if (response.data.errors) {
-        throw new Error(`Shopify admin API responded with error: ${JSON.stringify(response.data.errors)}`)
-      }
-
-      return response;
+  admin.interceptors.response.use(function (response) {
+    if (response.data.errors) {
+      throw new Error(
+        `Shopify admin API responded with error: ${JSON.stringify(
+          response.data.errors,
+        )}`,
+      );
     }
-  );
+
+    return response;
+  });
 
   const storefrontClient = axios.create({
     baseURL: `https://${storefrontShopDomain}/api/${apiVersion}/graphql`,
