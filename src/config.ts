@@ -1,5 +1,55 @@
-import { object, string, mixed } from "yup";
+import { object, string, mixed, lazy, boolean, number, array, Schema } from "yup";
 import { ApiVersion } from "./types";
+
+/**
+ * Default number of metafields to fetch
+ * when no specified
+ */
+const DEFAULT_METAFIELD_COUNT = 100;
+
+export interface PluginMetafieldConfig {
+  /**
+   * Property the metafield can be accessed on
+   * Defaults to metafield{Namespace}{Key}
+   */
+  name: string;
+
+  /**
+   * Namespace of the Shopify metafield to include
+   */
+  namespace: string;
+
+  /**
+   * Key of the Shopify metafield to include
+   */
+  key: string;
+}
+
+/**
+ * Configure the metafield fetching for a specific resource
+ * - false                   => Don't fetch metafields
+ * - number                  => Fetch n metafields
+ * - PluginMetafieldConfig[] => Fetch these metafields
+ */
+export type PluginMetafieldOption = boolean | number | PluginMetafieldConfig[];
+
+const PLUGIN_METAFIELD_CONFIG_SCHEMA = lazy<PluginMetafieldOption>((rawValue): Schema<PluginMetafieldOption> => {
+  const value = rawValue as unknown;
+  if (value === undefined || value === null || value === false) {
+    return boolean().default(false);
+  }
+  if (value === true || typeof value === 'number') {
+    return number().transform((value, originalValue) => { if (originalValue === true) {
+      return DEFAULT_METAFIELD_COUNT;
+      
+    } return value }).integer();
+  }
+  return array(object<PluginMetafieldConfig>({
+    namespace: string().required(),
+    key: string().required(),
+    name: string().required(),
+  }))
+});
 
 /**
  * Inernal populated config
@@ -37,6 +87,11 @@ export interface PluginConfig {
    * Shopify api version to use
    */
   apiVersion: ApiVersion;
+
+  /**
+   * Product metafield configuration
+   */
+  productMetafields: PluginMetafieldOption;
 }
 
 const PLUGIN_CONFIG_SCHEMA = object({
@@ -45,6 +100,7 @@ const PLUGIN_CONFIG_SCHEMA = object({
   storefrontAccessToken: string().required(),
   storefrontShopDomain: string().optional(),
   apiVersion: mixed<ApiVersion>().oneOf([ApiVersion.Apr2020, ApiVersion.Jul2020]).default(ApiVersion.Apr2020),
+  productMetafields: PLUGIN_METAFIELD_CONFIG_SCHEMA,
 });
 
 export function parseConfig(input: unknown): PluginConfig {

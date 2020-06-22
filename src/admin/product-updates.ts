@@ -44,7 +44,10 @@ async function fetchAdminProductUpdates(
   return data.data.products;
 }
 
-function con(node: ProductUpdatesQuery['products']['edges'][0]['node'], since: Date) {
+function con(
+  node: ProductUpdatesQuery['products']['edges'][0]['node'],
+  since: Date,
+) {
   return new Date(node.updatedAt) > since;
 }
 
@@ -53,10 +56,14 @@ function vars(since: Date) {
   const query = `updated_at:>${hourSlug}`;
   return {
     query,
-  }
+  };
 }
 
 /**
  * Generates product updates in batches of 50
  */
-export const adminProductUpdates = batchAllNodesFactory(fetchAdminProductUpdates, con, vars);
+export const adminProductUpdates = batchAllNodesFactory(
+  fetchAdminProductUpdates,
+  con,
+  vars,
+);

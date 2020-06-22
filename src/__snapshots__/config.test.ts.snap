@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`config.ts passes basic config: base with defaults populated 1`] = `
+Object {
+  "adminAccessToken": "xxxx",
+  "apiVersion": "2020-04",
+  "myshopifyDomain": "example.myshopify.com",
+  "productMetafields": false,
+  "storefrontAccessToken": "yyyy",
+  "storefrontShopDomain": "example.myshopify.com",
+}
+`;

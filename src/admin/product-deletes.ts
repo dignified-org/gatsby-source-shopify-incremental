@@ -43,8 +43,10 @@ async function fetchAdminProductDeletes(
   return data.data.deletionEvents;
 }
 
-
-function con(node: ProductDeletesQuery['deletionEvents']['edges'][0]['node'], since: Date) {
+function con(
+  node: ProductDeletesQuery['deletionEvents']['edges'][0]['node'],
+  since: Date,
+) {
   return new Date(node.occurredAt) > since;
 }
 
@@ -53,10 +55,14 @@ function vars(since: Date) {
   const query = `occurred_at:>${hourSlug}`;
   return {
     query,
-  }
+  };
 }
 
 /**
  * Generates product deletes in batches of 50
  */
-export const adminProductDeletes = batchAllNodesFactory(fetchAdminProductDeletes, con, vars);
+export const adminProductDeletes = batchAllNodesFactory(
+  fetchAdminProductDeletes,
+  con,
+  vars,
+);
