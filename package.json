@@ -1,7 +1,7 @@
 {
   "name": "gatsby-source-shopify-incremental",
   "description": "Gatsby source plugin for Shopify",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "author": "Dignified <public@dignified.app>",
   "contributors": [
     {
