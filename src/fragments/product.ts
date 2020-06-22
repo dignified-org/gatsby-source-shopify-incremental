@@ -17,13 +17,6 @@ function productVariantFragment(version: ApiVersion) {
         id
         originalSrc
       }
-      metafields(first: 250) {
-        edges {
-          node {
-            ...MetafieldNode
-          }
-        }
-      }
       price
       priceV2 {
         amount
@@ -38,6 +31,14 @@ function productVariantFragment(version: ApiVersion) {
       title
       weight
       weightUnit
+      metafields(first: 250) {
+        edges {
+          node {
+            # Included in variant fragment
+            ...MetafieldNode
+          }
+        }
+      }
       presentmentPrices(first: 250) {
         edges {
           node {
@@ -52,6 +53,27 @@ function productVariantFragment(version: ApiVersion) {
           }
         }
       }
+      presentmentUnitPrices(first: 250) {
+        edges {
+          node {
+            amount
+            currencyCode
+          }
+        }
+      }
+      unitPrice {
+        amount
+        currencyCode
+      }
+      unitPriceMeasurement {
+        measuredType
+        quantityUnit
+        quantityValue
+        referenceUnit
+        referenceValue
+      }
+      weight
+      weightUnit
     }
   `;
 }
@@ -83,11 +105,38 @@ export function productFragment(version: ApiVersion) {
           }
         }
       }
+      media(first: 250) {
+        edges {
+          node {
+            alt
+            mediaContentType
+            previewImage {
+              altText
+              id
+              originalSrc
+            }
+          }
+        }
+      }
       onlineStoreUrl
       options {
         id
         name
         values
+      }
+      presentmentPriceRanges(first: 250) {
+        edges {
+          node {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+            maxVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+        }
       }
       priceRange {
         minVariantPrice {
@@ -112,6 +161,16 @@ export function productFragment(version: ApiVersion) {
         }
       }
       vendor
+      compareAtPriceRange {
+        maxVariantPrice {
+          amount
+          currencyCode
+        }
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
     }
   `;
 }

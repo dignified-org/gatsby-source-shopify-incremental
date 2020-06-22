@@ -8,6 +8,9 @@ import { fetchStorefrontProductsByIds } from '../queries';
 
 type R = AsyncGenerator<Event<ProductNodeFragment>>;
 
+// TODO factor out event handling code and remove
+// duplication with collection events
+
 export async function* productEventsSince(client: Client, since: Date): R {
   for await (let deletedProductNodes of adminProductDeletes(client, since)) {
     for (let node of deletedProductNodes) {

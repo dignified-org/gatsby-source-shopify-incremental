@@ -13,6 +13,7 @@ export function collectionFragment(version: ApiVersion) {
         src
         originalSrc
       }
+      # TODO load more than 250 products...
       products(first: 250) {
         edges {
           node {

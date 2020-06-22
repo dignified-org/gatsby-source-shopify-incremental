@@ -9,6 +9,7 @@ generates:
     plugins:
       - add: '/* AUTO GENERATED FILE. DO NOT MODIFY */'
       - add: '/* eslint-disable */'
+      - add: '/* prettier-ignore-start */'
       - typescript
       - typescript-operations
 
@@ -21,5 +22,6 @@ generates:
     plugins:
       - add: '/* AUTO GENERATED FILE. DO NOT MODIFY */'
       - add: '/* eslint-disable */'
+      - add: '/* prettier-ignore-start */'
       - typescript
       - typescript-operations

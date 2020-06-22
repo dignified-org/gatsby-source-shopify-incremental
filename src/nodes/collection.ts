@@ -3,6 +3,7 @@ import createNodeHelpers from '../create-node-helpers';
 import { TYPE_PREFIX, NodeType } from '../constants';
 import { CollectionNodeFragment } from '../queries/types';
 import { GatsbyNodeCreator } from '../types';
+import { NodeActions } from '.';
 
 const { createNodeFactory, generateNodeId } = createNodeHelpers({
   typePrefix: TYPE_PREFIX,
@@ -28,7 +29,25 @@ const CollectionNode = createNodeFactory(
 
 export async function createCollectionNode(
   collection: CollectionNodeFragment,
-  createNode: GatsbyNodeCreator,
+  actions: NodeActions,
 ) {
+  const { createNode } = actions;
   await CollectionNode(collection).then(createNode);
+}
+
+export async function deleteCollectionNode(
+  storefrontId: string,
+  actions: NodeActions,
+) {
+  const { getNode, deleteNode } = actions;
+
+  const collectionNode = getNode(
+    generateNodeId(NodeType.COLLECTION, storefrontId),
+  );
+
+  if (collectionNode) {
+    deleteNode({
+      node: collectionNode,
+    });
+  }
 }

@@ -5,7 +5,7 @@ import {
   LoadProductsByIdsQuery,
   LoadProductsByIdsQueryVariables,
 } from './types';
-import { ApiVersion, QueryResult } from '../types';
+import { ApiVersion } from '../types';
 import { productFragment } from '../fragments';
 import { fetchAllNodesFactory } from './util';
 
@@ -31,15 +31,14 @@ function productsQuery(version: ApiVersion) {
 async function fetchStorefrontProducts(
   client: Client,
   variables: LoadProductsQueryVariables,
+  page: number,
 ) {
-  const { data } = (await client.storefront({
-    data: {
-      query: productsQuery(client.version),
-      variables,
-    },
-  })) as QueryResult<LoadProductsQuery>;
+  const data = await client.storefront<
+    LoadProductsQuery,
+    LoadProductsQueryVariables
+  >(`products-${page}`, productsQuery(client.version), variables);
 
-  return data.data.products;
+  return data.products;
 }
 
 export const loadAllStorefrontProducts = fetchAllNodesFactory(
@@ -65,12 +64,10 @@ export async function fetchStorefrontProductsByIds(
 ) {
   const variables: LoadProductsByIdsQueryVariables = { ids };
 
-  const { data } = (await client.storefront({
-    data: {
-      query: productsByIdsQuery(client.version),
-      variables,
-    },
-  })) as QueryResult<LoadProductsByIdsQuery>;
+  const data = await client.storefront<
+    LoadProductsByIdsQuery,
+    LoadProductsByIdsQueryVariables
+  >('products-by-ids', productsByIdsQuery(client.version), variables);
 
-  return data.data.nodes;
+  return data.nodes;
 }

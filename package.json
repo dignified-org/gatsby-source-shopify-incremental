@@ -1,31 +1,75 @@
 {
   "name": "gatsby-source-shopify-incremental",
+  "description": "Gatsby source plugin for Shopify",
+  "version": "1.0.0-alpha.2",
+  "author": "Dignified <public@dignified.app>",
+  "contributors": [
+    {
+      "name": "Quinn Blenkinsop",
+      "email": "quinn@blenkinsop.net"
+    }
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "repository": "https://github.com/dignified-org/gatsby-source-shopify-incremental",
+  "homepage": "https://github.com/dignified-org/gatsby-source-shopify-incremental#readme",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dignified-org/gatsby-source-shopify-incremental/issues"
+  },
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin",
+    "gatsby-source-plugin",
+    "shopify"
+  ],
+  "main": "index.js",
   "scripts": {
-    "format": "prettier --write src/**/*.ts",
+    "test": "jest",
+    "build": "tsc",
+    "format": "prettier --write src",
     "gen": "graphql-codegen --config codegen.yml",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "release": "dotenv release-it"
   },
   "dependencies": {
-    "axios": "0.19.2",
-    "axios-retry": "3.1.8",
-    "date-fns": "2.13.0",
-    "graphql": "14.6.0",
-    "json-stringify-safe": "5.0.1",
-    "yup": "0.28.5"
+    "axios": "^0.19.2",
+    "bottleneck": "^2.19.5",
+    "date-fns": "^2.14.0",
+    "graphql": "^15.1.0",
+    "json-stringify-safe": "^5.0.1",
+    "yup": "^0.28.5"
   },
   "devDependencies": {
-    "@graphql-codegen/add": "1.13.5",
-    "@graphql-codegen/cli": "1.13.5",
-    "@graphql-codegen/typescript": "1.13.5",
-    "@graphql-codegen/typescript-operations": "1.13.5",
+    "@graphql-codegen/add": "1.15.4",
+    "@graphql-codegen/cli": "1.15.4",
+    "@graphql-codegen/typescript": "1.15.4",
+    "@graphql-codegen/typescript-operations": "1.15.4",
     "@types/axios": "0.14.0",
-    "@types/jest": "^25.2.2",
+    "@types/jest": "26.0.0",
     "@types/json-stringify-safe": "5.0.0",
     "@types/yup": "0.28.3",
-    "gatsby": "2.21.33",
+    "dotenv-cli": "3.1.0",
+    "gatsby": "2.23.4",
     "jest": "26.0.1",
     "prettier": "2.0.5",
-    "ts-jest": "26.0.0",
-    "typescript": "3.9.2"
+    "release-it": "13.6.3",
+    "ts-jest": "26.1.0",
+    "typescript": "3.9.5"
+  },
+  "release-it": {
+    "github": {
+      "release": true
+    },
+    "git": {
+      "changelog": "npx auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
+    },
+    "hooks": {
+      "after:bump": [
+        "npx auto-changelog -p",
+        "yarn build"
+      ]
+    }
   }
 }

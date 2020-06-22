@@ -58,7 +58,7 @@ interface ProductMetafieldNode extends MetafieldNodeFragment {
 const ProductMetafieldNode = createNodeFactory(
   NodeType.PRODUCT_METAFIELD,
   async (node: ProductMetafieldNode, productId: string) => {
-    node.product___NODE = generateNodeId(NodeType.PRODUCT_VARIANT, productId);
+    node.product___NODE = generateNodeId(NodeType.PRODUCT, productId);
 
     return node;
   },
@@ -102,12 +102,14 @@ const ProductVariantMetafieldNode = createNodeFactory(
 
 export async function createProductNode(
   product: ProductNodeFragment,
-  createNode: GatsbyNodeCreator,
+  actions: NodeActions,
 ) {
+  const { createNode } = actions;
+
   // Create all metafield nodes
   await Promise.all(
     product.metafields.edges
-      .map((edge) => ProductMetafieldNode(edge.node))
+      .map((edge) => ProductMetafieldNode(edge.node, product.id))
       .map((p) => p.then(createNode)),
   );
 
@@ -179,7 +181,6 @@ export async function upsertProductNode(
   event: CreationEvent<ProductNodeFragment>,
   actions: NodeActions,
 ) {
-  const { createNode } = actions;
   await deleteProductNode(event.storefrontId, actions);
-  await createProductNode(event.node, createNode);
+  await createProductNode(event.node, actions);
 }

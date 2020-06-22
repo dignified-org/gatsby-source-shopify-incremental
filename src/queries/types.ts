@@ -1,6 +1,8 @@
 /* AUTO GENERATED FILE. DO NOT MODIFY */
 /* eslint-disable */
+/* prettier-ignore-start */
 export type Maybe<T> = T | null;
+export type Exact<T extends { [key: string]: any }> = { [K in keyof T]: T[K] };
 
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -9,20 +11,20 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** An ISO-8601 encoded UTC date time string. Example value: `"2019-07-03T20:47:55Z"`. */
+  DateTime: any;
+  /** A signed decimal number, which supports arbitrary precision and is serialized as a string. Example value: `"29.99"`. */
+  Decimal: any;
+  /** A string containing HTML code. Example value: `"<p>Grey cotton knit sweater.</p>"`. */
+  HTML: any;
+  /** A monetary value string. Example value: `"100.57"`. */
+  Money: any;
   /**
    * An RFC 3986 and RFC 3987 compliant URI string.
    *
    * Example value: `"https://johns-apparel.myshopify.com"`.
    */
   URL: any;
-  /** A string containing HTML code. Example value: `"<p>Grey cotton knit sweater.</p>"`. */
-  HTML: any;
-  /** An ISO-8601 encoded UTC date time string. Example value: `"2019-07-03T20:47:55Z"`. */
-  DateTime: any;
-  /** A monetary value string. Example value: `"100.57"`. */
-  Money: any;
-  /** A signed decimal number, which supports arbitrary precision and is serialized as a string. Example value: `"29.99"`. */
-  Decimal: any;
 };
 
 /** A version of the API. */
@@ -4867,6 +4869,33 @@ export enum WeightUnit {
   Ounces = 'OUNCES',
 }
 
+export type ArticleNodeFragment = Pick<
+  Article,
+  | 'content'
+  | 'contentHtml'
+  | 'excerpt'
+  | 'excerptHtml'
+  | 'id'
+  | 'publishedAt'
+  | 'tags'
+  | 'title'
+  | 'handle'
+  | 'url'
+> & {
+  author: Pick<
+    ArticleAuthor,
+    'bio' | 'email' | 'firstName' | 'lastName' | 'name'
+  >;
+  authorV2?: Maybe<
+    Pick<ArticleAuthor, 'bio' | 'email' | 'firstName' | 'lastName' | 'name'>
+  >;
+  blog: Pick<Blog, 'id'>;
+  image?: Maybe<Pick<Image, 'altText' | 'id' | 'src' | 'originalSrc'>>;
+  seo?: Maybe<Pick<Seo, 'title' | 'description'>>;
+};
+
+export type BlogNodeFragment = Pick<Blog, 'id' | 'title' | 'handle' | 'url'>;
+
 export type CollectionNodeFragment = Pick<
   Collection,
   'description' | 'descriptionHtml' | 'handle' | 'id' | 'title' | 'updatedAt'
@@ -4887,6 +4916,18 @@ export type MetafieldNodeFragment = Pick<
   | 'updatedAt'
 >;
 
+export type PageNodeFragment = Pick<
+  Page,
+  | 'id'
+  | 'handle'
+  | 'title'
+  | 'body'
+  | 'bodySummary'
+  | 'updatedAt'
+  | 'createdAt'
+  | 'url'
+>;
+
 export type ProductVariantNodeFragment = Pick<
   ProductVariant,
   | 'availableForSale'
@@ -4901,9 +4942,9 @@ export type ProductVariantNodeFragment = Pick<
 > & {
   compareAtPriceV2?: Maybe<Pick<MoneyV2, 'amount' | 'currencyCode'>>;
   image?: Maybe<Pick<Image, 'altText' | 'id' | 'originalSrc'>>;
-  metafields: { edges: Array<{ node: MetafieldNodeFragment }> };
   priceV2: Pick<MoneyV2, 'amount' | 'currencyCode'>;
   selectedOptions: Array<Pick<SelectedOption, 'name' | 'value'>>;
+  metafields: { edges: Array<{ node: MetafieldNodeFragment }> };
   presentmentPrices: {
     edges: Array<{
       node: {
@@ -4912,6 +4953,20 @@ export type ProductVariantNodeFragment = Pick<
       };
     }>;
   };
+  presentmentUnitPrices: {
+    edges: Array<{ node: Pick<MoneyV2, 'amount' | 'currencyCode'> }>;
+  };
+  unitPrice?: Maybe<Pick<MoneyV2, 'amount' | 'currencyCode'>>;
+  unitPriceMeasurement?: Maybe<
+    Pick<
+      UnitPriceMeasurement,
+      | 'measuredType'
+      | 'quantityUnit'
+      | 'quantityValue'
+      | 'referenceUnit'
+      | 'referenceValue'
+    >
+  >;
 };
 
 export type ProductNodeFragment = Pick<
@@ -4934,18 +4989,71 @@ export type ProductNodeFragment = Pick<
     edges: Array<{ node: Pick<Image, 'id' | 'altText' | 'originalSrc'> }>;
   };
   metafields: { edges: Array<{ node: MetafieldNodeFragment }> };
+  media: {
+    edges: Array<{
+      node:
+        | (Pick<ExternalVideo, 'alt' | 'mediaContentType'> & {
+            previewImage?: Maybe<Pick<Image, 'altText' | 'id' | 'originalSrc'>>;
+          })
+        | (Pick<MediaImage, 'alt' | 'mediaContentType'> & {
+            previewImage?: Maybe<Pick<Image, 'altText' | 'id' | 'originalSrc'>>;
+          })
+        | (Pick<Model3d, 'alt' | 'mediaContentType'> & {
+            previewImage?: Maybe<Pick<Image, 'altText' | 'id' | 'originalSrc'>>;
+          })
+        | (Pick<Video, 'alt' | 'mediaContentType'> & {
+            previewImage?: Maybe<Pick<Image, 'altText' | 'id' | 'originalSrc'>>;
+          });
+    }>;
+  };
   options: Array<Pick<ProductOption, 'id' | 'name' | 'values'>>;
+  presentmentPriceRanges: {
+    edges: Array<{
+      node: {
+        minVariantPrice: Pick<MoneyV2, 'amount' | 'currencyCode'>;
+        maxVariantPrice: Pick<MoneyV2, 'amount' | 'currencyCode'>;
+      };
+    }>;
+  };
   priceRange: {
     minVariantPrice: Pick<MoneyV2, 'amount' | 'currencyCode'>;
     maxVariantPrice: Pick<MoneyV2, 'amount' | 'currencyCode'>;
   };
   variants: { edges: Array<{ node: ProductVariantNodeFragment }> };
+  compareAtPriceRange: {
+    maxVariantPrice: Pick<MoneyV2, 'amount' | 'currencyCode'>;
+    minVariantPrice: Pick<MoneyV2, 'amount' | 'currencyCode'>;
+  };
 };
 
-export type LoadCollectionsQueryVariables = {
+export type LoadArticlesQueryVariables = Exact<{
   first: Scalars['Int'];
   after?: Maybe<Scalars['String']>;
+}>;
+
+export type LoadArticlesQuery = {
+  articles: {
+    pageInfo: Pick<PageInfo, 'hasNextPage'>;
+    edges: Array<Pick<ArticleEdge, 'cursor'> & { node: ArticleNodeFragment }>;
+  };
 };
+
+export type LoadBlogsQueryVariables = Exact<{
+  first: Scalars['Int'];
+  after?: Maybe<Scalars['String']>;
+}>;
+
+export type LoadBlogsQuery = {
+  blogs: {
+    pageInfo: Pick<PageInfo, 'hasNextPage'>;
+    edges: Array<Pick<BlogEdge, 'cursor'> & { node: BlogNodeFragment }>;
+  };
+};
+
+export type LoadCollectionsQueryVariables = Exact<{
+  first: Scalars['Int'];
+  after?: Maybe<Scalars['String']>;
+}>;
 
 export type LoadCollectionsQuery = {
   collections: {
@@ -4956,10 +5064,30 @@ export type LoadCollectionsQuery = {
   };
 };
 
-export type LoadProductsQueryVariables = {
+export type LoadCollectionsByIdsQueryVariables = Exact<{
+  ids: Array<Scalars['ID']>;
+}>;
+
+export type LoadCollectionsByIdsQuery = {
+  nodes: Array<Maybe<CollectionNodeFragment>>;
+};
+
+export type LoadPagesQueryVariables = Exact<{
   first: Scalars['Int'];
   after?: Maybe<Scalars['String']>;
+}>;
+
+export type LoadPagesQuery = {
+  pages: {
+    pageInfo: Pick<PageInfo, 'hasNextPage'>;
+    edges: Array<Pick<PageEdge, 'cursor'> & { node: PageNodeFragment }>;
+  };
 };
+
+export type LoadProductsQueryVariables = Exact<{
+  first: Scalars['Int'];
+  after?: Maybe<Scalars['String']>;
+}>;
 
 export type LoadProductsQuery = {
   products: {
@@ -4968,10 +5096,20 @@ export type LoadProductsQuery = {
   };
 };
 
-export type LoadProductsByIdsQueryVariables = {
+export type LoadProductsByIdsQueryVariables = Exact<{
   ids: Array<Scalars['ID']>;
-};
+}>;
 
 export type LoadProductsByIdsQuery = {
   nodes: Array<Maybe<ProductNodeFragment>>;
+};
+
+export type LoadShopQueryVariables = Exact<{ [key: string]: never }>;
+
+export type LoadShopQuery = {
+  shop: {
+    privacyPolicy?: Maybe<Pick<ShopPolicy, 'body' | 'id' | 'title' | 'url'>>;
+    refundPolicy?: Maybe<Pick<ShopPolicy, 'body' | 'id' | 'title' | 'url'>>;
+    termsOfService?: Maybe<Pick<ShopPolicy, 'body' | 'id' | 'title' | 'url'>>;
+  };
 };

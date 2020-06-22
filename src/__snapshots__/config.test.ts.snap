@@ -4,8 +4,12 @@ exports[`config.ts passes basic config: base with defaults populated 1`] = `
 Object {
   "adminAccessToken": "xxxx",
   "apiVersion": "2020-04",
+  "includeBlogs": false,
+  "includeCollections": true,
+  "includePages": false,
   "myshopifyDomain": "example.myshopify.com",
   "productMetafields": false,
+  "shopifyPlus": false,
   "storefrontAccessToken": "yyyy",
   "storefrontShopDomain": "example.myshopify.com",
 }
