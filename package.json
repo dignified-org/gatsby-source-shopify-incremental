@@ -34,7 +34,7 @@
     "release": "dotenv release-it"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bottleneck": "^2.19.5",
     "date-fns": "^2.14.0",
     "graphql": "^15.1.0",
